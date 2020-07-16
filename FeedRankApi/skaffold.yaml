@@ -1,0 +1,12 @@
+apiVersion: skaffold/v1
+kind: Config
+build:
+  artifacts:
+  - image: gcr.io/cedar-talent-279001/feedrank
+  googleCloudBuild:
+    projectId: cedar-talent-279001
+deploy:
+  kubectl:
+    manifests:
+      - kubernetes-manifests/deployment.yaml
+      - kubernetes-manifests/service.yaml
