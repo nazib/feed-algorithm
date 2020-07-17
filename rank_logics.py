@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from numpy import matlib as mt
+from preprocess_data import*
 
 ###########################################################################
 #                        Global Feed Ranking Logic                        #
@@ -32,4 +33,76 @@ def GlobalRank(data, weights, file_path, ratio):
     ranked_feed['RankScore'] = feed_rank
     ranked_feed.sort_values(by=ranked_feed.columns.values[-1], ascending=False, inplace=True)
     return ranked_feed
+
+def Personalized_ranks(ranked_feed,ranked_user_info,user_data,selected_uid):
+    ### One-to-many Adjecency Matrix  from the Global Ranked data###
+    user_weights =pd.DataFrame(data=np.zeros(shape=(ranked_user_info.shape[0],selected_uid.shape[1])),columns=user_data.columns)
+
+    for i in range(ranked_user_info.shape[0]):
+        
+        values = ranked_user_info.iloc[i].values
+        values = np.expand_dims(values, axis=0)
+
+        poster_id = pd.DataFrame(data=values,columns=user_data.columns)
+        '''
+        ### Same id weight ###
+        if poster_id['user_id'][0] == selected_uid['user_id'][0]:
+            user_weights['user_id'][i] =1.0
+        else:
+            user_weights['user_id'][i] = 0.0
+        '''
+        ### City Weight ###
+        if selected_uid['city'][0] == poster_id['city'][0]:
+            user_weights['city'][i] = 1.0
+        else:
+            user_weights['city'][i]= 0.0
+        ### Country weight ###
+        if selected_uid['country'][0] == poster_id['country'][0]:
+            user_weights['country'][i] = 1.0
+        else:
+            user_weights['country'][i] = 0.0
+        ### Gender weight ###
+        if selected_uid['gp:tv_gender'][0] == poster_id['gp:tv_gender'][0]:
+            user_weights['gp:tv_gender'][i] == 1.0
+        else:
+            user_weights['gp:tv_gender'][i] == 0.0
+        ### Level weight ###
+        if selected_uid['gp:status_level'][0] == poster_id['gp:status_level'][0]:
+            user_weights['gp:status_level'][i] == 1.0
+        else:
+            user_weights['gp:status_level'][i] == 0.0
+
+        ### Comments weight ###
+        sid_data  = float(selected_uid['gp:total_comments'][0])
+        pid_data =  float(poster_id['gp:total_comments'][0])
+        user_weights['gp:total_comments'][i] = calculate_weight(sid_data,pid_data)
+        
+        ### Like weight ###
+        sid_data  = float(selected_uid['gp:total_likes'][0])
+        pid_data =  float(poster_id['gp:total_likes'][0])
+        user_weights['gp:total_likes'][i] = calculate_weight(sid_data,pid_data)
+
+        ### Follower weight ###
+        sid_data  = float(selected_uid['gp:num_followers'][0])
+        pid_data =  float(poster_id['gp:num_followers'][0])
+        user_weights['gp:num_followers'][i] = calculate_weight(sid_data,pid_data)
+        
+        ### Status Level weight ###
+        sid_data  = float(selected_uid['gp:status_level'][0])
+        pid_data =  float(poster_id['gp:status_level'][0])
+        user_weights['gp:status_level'][i] = calculate_weight(sid_data,pid_data)
+
+    user_weights = user_weights.values
+    ranked_user_info.drop("user_id",axis=1,inplace=True)
+    user_feature = np.zeros(shape=user_weights.shape, dtype=float)
+    user_feature[:,1:] = ranked_user_info.values
+    user_feature[:,0] = user_weights[:,0]
+    global_ranks = pd.to_numeric(ranked_feed["RankScore"])
+
+    personal_rank = np.zeros(shape=(user_weights.shape[0],1),dtype=float)
+
+    for i in range(user_weights.shape[0]):
+        personal_rank[i] = np.sum(user_feature[i,:]*user_weights[i,:]*global_ranks[i])
+    
+    return personal_rank
     

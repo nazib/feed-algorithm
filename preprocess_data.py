@@ -3,6 +3,20 @@ import pandas as pd
 import glob
 import pygeohash as pg
 import os
+from sklearn import preprocessing
+
+def calculate_weight(sid,pid):
+    if sid==0.0 and pid ==0.0:
+        return 0
+    else:
+        return np.exp((sid-pid)/(sid+pid)) 
+
+def extract(user, ranked):
+    ext_data = pd.DataFrame(columns=user.columns)
+    for i in range(ranked.shape[0]):
+        person = user[user['user_id']==ranked['uid'][i]].values
+        ext_data.loc[i,:] = person
+    return ext_data
 
 def remove_tab(data):
     for x in data.columns:
@@ -105,7 +119,7 @@ def prep_user_interaction(Data_dir = "/media/nazib/E20A2DB70A2D899D/Ubuntu_deskt
         user_data["gp:status_level"] = Enc_text["gp:status_level"]
 
         user_data.fillna(value=0,inplace=True)
-        user_data.to_csv(Data_dir+"All_User_data.csv", index=False)
+        #user_data.to_csv(Data_dir+"All_User_data.csv", index=False)
         return user_data
 
 

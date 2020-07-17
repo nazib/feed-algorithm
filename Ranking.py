@@ -13,6 +13,7 @@ from sklearn import preprocessing
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.mixture import GaussianMixture as GMM
 from sklearn.mixture import BayesianGaussianMixture as BGMM
+from preprocess_data import*
 
 def ranking(ranks, names, order=1):
     minmax = MinMaxScaler()
@@ -30,12 +31,6 @@ def remove_tab(data):
                 cols.insert(i,str(data[x][i]).replace("\t",""))
         data[x]=cols
     return data   
-
-def calculate_weight(sid,pid):
-    if sid==0.0 and pid ==0.0:
-        return 0
-    else:
-        return np.exp((sid-pid)/(sid+pid)) 
 
 def extract(user, ranked):
 
