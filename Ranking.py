@@ -14,6 +14,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.mixture import GaussianMixture as GMM
 from sklearn.mixture import BayesianGaussianMixture as BGMM
 from preprocess_data import*
+from rank_logics import*
 
 def ranking(ranks, names, order=1):
     minmax = MinMaxScaler()
@@ -21,28 +22,7 @@ def ranking(ranks, names, order=1):
     ranks = map(lambda x: round(x,2), ranks)
     return dict(zip(names, ranks))
 
-def remove_tab(data):
-    for x in data.columns:
-        cols = []
-        for i in range(data[x].values.shape[0]):
-            if data[x][i] == '\t':
-                cols.insert(i,"0")
-            else:
-                cols.insert(i,str(data[x][i]).replace("\t",""))
-        data[x]=cols
-    return data   
-
-def extract(user, ranked):
-
-    ext_data = pd.DataFrame(columns=user_data.columns)
-
-    for i in range(ranked.shape[0]):
-        person = user[user['user_id']==ranked['uid'][i]].values
-        ext_data.loc[i,:] = person
-    
-    return ext_data
-
-#pro_data = pd.read_csv("/home/nazib/Desktop/Travello/RawData/processed_feed_data10K.csv")
+#pro_data = pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/processed_feed_data10K.csv")
 pro_data =  pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/AllFeedData.csv")
 pro_data.drop('uid',axis=1,inplace=True)
 pro_data.drop('ptid',axis=1,inplace=True)
@@ -142,44 +122,21 @@ for i in range(1,theta.shape[0]):
 
 #feed_rank = np.sort(feed_rank,axis=0)
 
-ranked_feed = pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/AllFeedData.csv")
+#ranked_feed = pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/processed_feed_data10K.csv")
+ranked_feed =  pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/AllFeedData.csv")
 ranked_feed = ranked_feed.loc[train_ratio+1:N,ranked_feed.columns]
 ranked_feed['RankScore'] = feed_rank
 ranked_feed.sort_values(by=ranked_feed.columns.values[-1], ascending=False, inplace=True)
-ranked_feed.to_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/Global_Rank_all_feed.csv",index=False)
+#ranked_feed.to_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/Global_Rank_all_feed.csv",index=False)
 
 ###########################################################################
 #                       Personalised Feed Ranking Logic                  #
 ###########################################################################
-user_data = pd.read_csv("/home/nazib/Desktop/Travello/RawData/Cohort_Users_For_Feed.csv")
-x = []
-for i in range(len(user_data.columns)):
-    x.insert(i,str(user_data.columns[i]).replace("\t",""))
+#user_data = pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/Processed_User_data.csv")
+#user_data = pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_interaction/All_User_data.csv")
 
-user_data.columns = x
-user_data = user_data[['user_id','city','country','gp:num_followers',
-'gp:total_comments','gp:total_likes','gp:tv_gender','gp:status_level']]
-
-user_data = remove_tab(user_data)
-
-text_data = pd.DataFrame()
-text_data["city"] = user_data["city"]
-text_data["country"] = user_data["country"]
-text_data["gp:tv_gender"] = user_data["gp:tv_gender"]
-text_data["gp:status_level"] = user_data["gp:status_level"]
-#text_data["gp:tv_groups"] = user_data["gp:tv_groups"]
-
-Enc = preprocessing.LabelEncoder()
-Enc_text = text_data.apply(Enc.fit_transform)
-#print(Enc_text.head())
-user_data["city"] = Enc_text["city"]
-user_data["country"] = Enc_text["country"]
-user_data["gp:tv_gender"] = Enc_text["gp:tv_gender"]
-user_data["gp:status_level"] = Enc_text["gp:status_level"]
-
-user_data.fillna(value=0,inplace=True)
-#user_data.to_csv("/home/nazib/Desktop/Travello/RawData/Processed_User_data.csv", index=False)
-
+### Processing User interaction data
+user_data = prep_user_interaction()
 ### Extracting user info of Ranked Feed ###
 ranked_user_info = extract(user_data,ranked_feed)
 
@@ -190,73 +147,8 @@ values = np.expand_dims(values,axis=0)
 selected_uid = pd.DataFrame(data=values, columns=user_data.columns)
 
 ### One-to-many Adjecency Matrix  from the Global Ranked data###
-user_weights =pd.DataFrame(data=np.zeros(shape=(ranked_feed.shape[0],selected_uid.shape[1])),columns=user_data.columns)
-
-for i in range(ranked_user_info.shape[0]):
-    
-    values = ranked_user_info.iloc[i].values
-    values = np.expand_dims(values, axis=0)
-
-    poster_id = pd.DataFrame(data=values,columns=user_data.columns)
-    '''
-    ### Same id weight ###
-    if poster_id['user_id'][0] == selected_uid['user_id'][0]:
-        user_weights['user_id'][i] =1.0
-    else:
-        user_weights['user_id'][i] = 0.0
-    '''
-    ### City Weight ###
-    if selected_uid['city'][0] == poster_id['city'][0]:
-        user_weights['city'][i] = 1.0
-    else:
-        user_weights['city'][i]= 0.0
-    ### Country weight ###
-    if selected_uid['country'][0] == poster_id['country'][0]:
-        user_weights['country'][i] = 1.0
-    else:
-        user_weights['country'][i] = 0.0
-    ### Gender weight ###
-    if selected_uid['gp:tv_gender'][0] == poster_id['gp:tv_gender'][0]:
-        user_weights['gp:tv_gender'][i] == 1.0
-    else:
-        user_weights['gp:tv_gender'][i] == 0.0
-    ### Level weight ###
-    if selected_uid['gp:status_level'][0] == poster_id['gp:status_level'][0]:
-        user_weights['gp:status_level'][i] == 1.0
-    else:
-        user_weights['gp:status_level'][i] == 0.0
-
-    ### Comments weight ###
-    sid_data  = float(selected_uid['gp:total_comments'][0])
-    pid_data =  float(poster_id['gp:total_comments'][0])
-    user_weights['gp:total_comments'][i] = calculate_weight(sid_data,pid_data)
-    
-    ### Like weight ###
-    sid_data  = float(selected_uid['gp:total_likes'][0])
-    pid_data =  float(poster_id['gp:total_likes'][0])
-    user_weights['gp:total_likes'][i] = calculate_weight(sid_data,pid_data)
-
-    ### Follower weight ###
-    sid_data  = float(selected_uid['gp:num_followers'][0])
-    pid_data =  float(poster_id['gp:num_followers'][0])
-    user_weights['gp:num_followers'][i] = calculate_weight(sid_data,pid_data)
-    
-    ### Status Level weight ###
-    sid_data  = float(selected_uid['gp:status_level'][0])
-    pid_data =  float(poster_id['gp:status_level'][0])
-    user_weights['gp:status_level'][i] = calculate_weight(sid_data,pid_data)
-
-user_weights = user_weights.values
-ranked_user_info.drop("user_id",axis=1,inplace=True)
-user_feature = np.zeros(shape=user_weights.shape, dtype=float)
-user_feature[:,1:] = ranked_user_info.values
-user_feature[:,0] = user_weights[:,0]
-global_ranks = pd.to_numeric(ranked_feed["RankScore"])
-
-personal_rank = np.zeros(shape=(user_weights.shape[0],1),dtype=float)
-
-for i in range(user_weights.shape[0]):
-    personal_rank[i] = np.sum(user_feature[i,:]*user_weights[i,:]*global_ranks[i])
+user_weights = pd.DataFrame(data=np.zeros(shape=(ranked_feed.shape[0],selected_uid.shape[1])),columns=user_data.columns)
+personal_rank = Personalized_ranks(ranked_feed, ranked_user_info,user_data, selected_uid)
 
 ranked_feed["Personalized Rank"] = personal_rank
 ranked_feed.sort_values(by=ranked_feed.columns.values[-1], ascending=False, inplace=True)

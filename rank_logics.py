@@ -6,7 +6,7 @@ from preprocess_data import*
 ###########################################################################
 #                        Global Feed Ranking Logic                        #
 ###########################################################################
-def GlobalRank(data, weights, file_path, ratio):
+def GlobalRank(data, weights):
     TH= 60*36
     values = data[:,2]
     decay = weights[2]*np.exp(1-(values/TH))
@@ -25,14 +25,15 @@ def GlobalRank(data, weights, file_path, ratio):
 
     for i in range(1,weights.shape[0]):
         feed_rank[i] = np.sum(rank_feat[i,:] * weights[i,:] *decay[i])
-
+    '''
     #feed_rank = np.sort(feed_rank,axis=0)
     ranked_feed = pd.read_csv(file_path)
     N,M = ranked_feed.shape
     ranked_feed = ranked_feed.loc[ratio+1:N,ranked_feed.columns]
     ranked_feed['RankScore'] = feed_rank
     ranked_feed.sort_values(by=ranked_feed.columns.values[-1], ascending=False, inplace=True)
-    return ranked_feed
+    '''
+    return feed_rank
 
 def Personalized_ranks(ranked_feed,ranked_user_info,user_data,selected_uid):
     ### One-to-many Adjecency Matrix  from the Global Ranked data###
@@ -44,13 +45,7 @@ def Personalized_ranks(ranked_feed,ranked_user_info,user_data,selected_uid):
         values = np.expand_dims(values, axis=0)
 
         poster_id = pd.DataFrame(data=values,columns=user_data.columns)
-        '''
-        ### Same id weight ###
-        if poster_id['user_id'][0] == selected_uid['user_id'][0]:
-            user_weights['user_id'][i] =1.0
-        else:
-            user_weights['user_id'][i] = 0.0
-        '''
+        
         ### City Weight ###
         if selected_uid['city'][0] == poster_id['city'][0]:
             user_weights['city'][i] = 1.0
@@ -97,12 +92,12 @@ def Personalized_ranks(ranked_feed,ranked_user_info,user_data,selected_uid):
     user_feature = np.zeros(shape=user_weights.shape, dtype=float)
     user_feature[:,1:] = ranked_user_info.values
     user_feature[:,0] = user_weights[:,0]
-    global_ranks = pd.to_numeric(ranked_feed["RankScore"])
+    global_ranks = ranked_feed["RankScore"].values#pd.to_numeric(ranked_feed["RankScore"])
 
     personal_rank = np.zeros(shape=(user_weights.shape[0],1),dtype=float)
 
     for i in range(user_weights.shape[0]):
-        personal_rank[i] = np.sum(user_feature[i,:]*user_weights[i,:]*global_ranks[i])
+        personal_rank[i] = np.sum(user_feature[i,:]*user_weights[i,:])*global_ranks[i]
     
     return personal_rank
     

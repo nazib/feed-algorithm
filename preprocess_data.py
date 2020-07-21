@@ -14,7 +14,7 @@ def calculate_weight(sid,pid):
 def extract(user, ranked):
     ext_data = pd.DataFrame(columns=user.columns)
     for i in range(ranked.shape[0]):
-        person = user[user['user_id']==ranked['uid'][i]].values
+        person = user[user['user_id']==ranked['uid'].iloc[i]].values
         ext_data.loc[i,:] = person
     return ext_data
 
