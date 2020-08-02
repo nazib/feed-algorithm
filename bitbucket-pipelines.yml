@@ -1,0 +1,27 @@
+options:
+  docker: true
+pipelines:
+  default:
+    - step:
+        size: 2x
+        caches:
+              - pip
+        script: 
+              - export IMAGE_NAME=gcr.io/cedar-talent-279001/feed-algorithm:latest
+              - docker build -t $IMAGE_NAME .
+              - docker login -u _json_key -p "$GCR_KEY" https://gcr.io
+              - docker push $IMAGE_NAME
+        services:
+          - docker
+    - step:
+        name: Deploy
+        deployment: production
+        script:
+          - sed -i "s|{{image}}|$IMAGE_NAME|g" deployment.yml
+          - echo $KUBECONFIG | base64 -d > kubeconfig.yml
+          - pipe: atlassian/kubectl-run:1.1.2
+            variables:
+              KUBE_CONFIG: $KUBE_CONFIG
+              KUBECTL_COMMAND: 'apply'
+              RESOURCE_PATH: './deployment.yml'                
+
