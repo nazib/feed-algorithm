@@ -1,27 +1,97 @@
-options:
-  docker: true
+.build-docker-image: &build-docker-image
+  services:
+    - docker
+  name: Build Docker Image
+  script:
+    - docker login -u "_json_key" -p "${GCR_JSON_KEY}" https://us.gcr.io
+    - docker build --build-arg VERSION=${BITBUCKET_BUILD_NUMBER}-${BITBUCKET_COMMIT:0:7} -t us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} .
+    # Docker image is also repeating actions from above
+    - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+
+
+.update-stage-cluster: &update-stage-cluster
+  services:
+    - docker
+  name: Update Stage Cluster
+  image: atlassian/pipelines-kubectl
+  deployment: staging
+  script:
+    # Pull the docker image
+    - docker login -u "_json_key" -p "${GCR_JSON_KEY}" https://us.gcr.io
+    - docker pull us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+    - echo $STAGE_KUBE_CA | base64 -d > /tmp/ca.pem
+    - kubectl config set-cluster stage --certificate-authority=/tmp/ca.pem --server=${STAGE_KUBE_SERVER}
+    - kubectl config set-credentials admin --username=${STAGE_KUBE_USER} --password=${STAGE_KUBE_PASSWORD}
+    - kubectl config set-context admin --cluster=stage --user=admin
+    - kubectl config use-context admin
+    # Update the deployment to use the new Docker image
+    - kubectl set image deployment/${STAGE_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} ${STAGE_CONTAINER:-$BITBUCKET_REPO_SLUG}=us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+    - timeout -t 180 kubectl rollout status deployment/${STAGE_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} || exit 1
+    # Tag the image as stage
+    - docker tag us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:stage
+    - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:stage
+
 pipelines:
   default:
     - step:
-        size: 2x
-        caches:
-              - pip
-        script: 
-              - export IMAGE_NAME=gcr.io/cedar-talent-279001/feed-algorithm:latest
-              - docker build -t $IMAGE_NAME .
-              - docker login -u _json_key -p "$GCR_KEY" https://gcr.io
-              - docker push $IMAGE_NAME
-        services:
-          - docker
-    - step:
-        name: Deploy
-        deployment: production
-        script:
-          - sed -i "s|{{image}}|$IMAGE_NAME|g" deployment.yml
-          - echo $KUBECONFIG | base64 -d > kubeconfig.yml
-          - pipe: atlassian/kubectl-run:1.1.2
-            variables:
-              KUBE_CONFIG: $KUBE_CONFIG
-              KUBECTL_COMMAND: 'apply'
-              RESOURCE_PATH: './deployment.yml'                
+        <<: *build-docker-image
+        trigger: manual
+    - step: *update-stage-cluster
 
+  branches:
+    develop:
+      - step: *build-docker-image
+      - step: *update-stage-cluster
+      - step:
+          services:
+            - docker
+          name: Update Production Cluster
+          image: atlassian/pipelines-kubectl
+          deployment: production
+          trigger: manual
+          script:
+            # Pull the docker image
+            - docker login -u "_json_key" -p "${GCR_JSON_KEY}" https://us.gcr.io
+            - docker pull us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+            - echo $PRODUCTION_KUBE_CA | base64 -d > /tmp/ca.pem
+            - kubectl config set-cluster production --certificate-authority=/tmp/ca.pem --server=${PRODUCTION_KUBE_SERVER}
+            - kubectl config set-credentials admin --username=${PRODUCTION_KUBE_USER} --password=${PRODUCTION_KUBE_PASSWORD}
+            - kubectl config set-context admin --cluster=production --user=admin
+            - kubectl config use-context admin
+            # Update the deployment to use the new Docker image
+            - kubectl set image deployment/${PRODUCTION_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} ${PRODUCTION_CONTAINER:-$BITBUCKET_REPO_SLUG}=us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+            - timeout -t 180 kubectl rollout status deployment/${STAGE_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} || exit 1
+            # Tag the image as stage
+            - docker tag us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:production
+            - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:production
+options:
+  docker: true
+
+
+#options:
+#  docker: true
+#pipelines:
+#  default:
+#    - step:
+#        size: 2x
+#        caches:
+#              - pip
+#        script:
+#              - export IMAGE_NAME=gcr.io/cedar-talent-279001/feed-algorithm:latest
+#              - docker build -t $IMAGE_NAME .
+#              - docker login -u _json_key -p "$GCR_KEY" https://gcr.io
+#              - docker push $IMAGE_NAME
+#        services:
+#          - docker
+#    - step:
+#        name: Deploy
+#        deployment: production
+#        script:
+#          - sed -i "s|{{image}}|$IMAGE_NAME|g" deployment.yml
+#          - echo $KUBECONFIG | base64 -d > kubeconfig.yml
+#          - pipe: atlassian/kubectl-run:1.1.2
+#            variables:
+#              KUBE_CONFIG: $KUBE_CONFIG
+#              KUBECTL_COMMAND: 'apply'
+#              RESOURCE_PATH: './deployment.yml'
+#
