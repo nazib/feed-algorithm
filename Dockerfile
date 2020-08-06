@@ -1,6 +1,6 @@
 # Python image to use.
 FROM python:3.8
-FROM tensorflow/tensorflow:latest-py3
+FROM tensorflow/tensorflow:2.2.0
 # Set the working directory to /app
 WORKDIR /app
 
