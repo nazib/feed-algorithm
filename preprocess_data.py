@@ -86,6 +86,7 @@ def prep_user_interaction(Data_dir = "/media/nazib/E20A2DB70A2D899D/Ubuntu_deskt
     if not os.path.exists(Data_dir):
         print("Data folder not exists")
     else:    
+        '''
         files = glob.glob(Data_dir+"*.tsv")
         user_data = pd.DataFrame()
 
@@ -97,8 +98,15 @@ def prep_user_interaction(Data_dir = "/media/nazib/E20A2DB70A2D899D/Ubuntu_deskt
         x = []
         for i in range(len(user_data.columns)):
             x.insert(i,str(user_data.columns[i]).replace("\t",""))
-        
         user_data.columns = x
+        '''
+        user_data = pd.read_csv(Data_dir+"All_Cohort_Feed_Data.csv")
+        
+        x = []
+        for i in range(len(user_data.columns)):
+            x.insert(i,str(user_data.columns[i]).replace("\t",""))
+        user_data.columns = x
+        
         user_data = user_data[['user_id','city','country','gp:num_followers',
         'gp:total_comments','gp:total_likes','gp:tv_gender','gp:status_level']]
         user_data = remove_tab(user_data)

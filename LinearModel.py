@@ -60,8 +60,8 @@ class LinearModel:
     
     def fit(self):
         if self.isdata == False:
-            print("Please Prepare data for training by calling 'prepare_feed_data' function")
-            return 1
+            #print("Please Prepare data for training by calling 'prepare_feed_data' function")
+            return "Please Prepare data for training by calling 'prepare_feed_data' function"
         else:
             self.Model.fit(self.train_data,self.train_label)
             self.istrained = True
@@ -78,6 +78,13 @@ class LinearModel:
                 print("Model is not trained properly")
             
             self.coefficients.tofile("LinearModel.dat")
+            return "Model Trained Successfully"
+    
+    def calculate_weight(self, sid,pid):
+        if sid==0.0 and pid ==0.0:
+            return 0
+        else:
+            return np.exp((sid-pid)/(sid+pid))
     
     def BulkRank(self, data):
         if self.istrained == False:
@@ -86,19 +93,70 @@ class LinearModel:
             rank_score = GlobalRank(data, self.coefficients)
             return rank_score
     
-    def Rank(self, data):
+    def GlobalRank(self, feed_data):
         if self.istrained == False:
-            print("Train the model first")
+            return "Model Not Trained"
         else:
             TH= 60*36
-            values = data[1]
-            decay = self.coefficients[2]*np.exp(1-(values/TH))
-            weights = np.array([self.coefficients[0],self.coefficients[2],self.coefficients[3],self.coefficients[4],self.coefficients[5]])            
-            data = np.array([data[0],data[2],data[3],data[4],data[5]])
+            post_age = feed_data["PostAge"]
+            decay = self.coefficients[2]*np.exp(1-(post_age/TH))
+
+            weights = np.array([self.coefficients[0],
+            self.coefficients[1],
+            self.coefficients[3],
+            self.coefficients[4],
+            self.coefficients[5],
+            self.coefficients[6],
+            ])            
+            data = np.array([
+            feed_data["NumberOfComments"],
+            feed_data["PostTextLength"],
+            feed_data["NumberOfHashTags"],
+            feed_data["Latitude"],
+            feed_data["Longitude"],
+            feed_data["NumberOfMediaUrls"],]
+            )
             feed_rank = np.sum(data*weights*decay)
             return feed_rank
 
+    def PersonalRank(self,data):
+        feed_data = data["FeedData"]
+        global_rank = self.GlobalRank(feed_data)
 
+        user_data = data["UserData"]
+        poster_data = data["PosterData"]
+        user_weights = {}
+
+        if user_data['UserCity'] == poster_data['PosterCity']:
+            user_weights['city'] = 1.0
+        else:
+            user_weights['city'] = 0.0
+        ### Country weight ###
+        if user_data['UserCountry'] == poster_data['PosterCountry']:
+            user_weights['country'] = 1.0
+        else:
+            user_weights['country'] = 0.0
+        ### Gender weight ###
+        if user_data["UserGender"] == poster_data['PosterGender']:
+            user_weights['gender'] = 1.0
+        else:
+            user_weights['gender'] = 0.0
+        
+        user_weights['total_comments'] = self.calculate_weight(user_data["UserTotalComments"],poster_data["PosterTotalComments"])
+        
+        ### Like weight ###
+        user_weights['total_likes'] = self.calculate_weight(user_data["UserTotalLikes"],poster_data["PosterTotalLikes"])
+
+        ### Follower weight ###
+        user_weights['total_followers'] = self.calculate_weight(user_data["UserNumberOfFollowers"],poster_data["PosterNumberOfFollowers"])
+        ### Status Level weight ###
+        user_weights['level'] = self.calculate_weight(user_data["UserStatusLevel"],poster_data["PosterStatusLevel"])
+
+        user_feature = np.array(list(user_data.values()), dtype=float)
+        weights = np.array(list(user_weights.values()),dtype=float)
+        personal_rank = np.sum(user_feature * weights * global_rank) 
+        return personal_rank, global_rank
+'''
 if __name__== "__main__":
     
     main_parser = argparse.ArgumentParser(prog='LinearModel')
@@ -141,7 +199,7 @@ if __name__== "__main__":
         data[6] = args.Url
         obj.Rank(data)
 
-    
+'''    
 
         
 

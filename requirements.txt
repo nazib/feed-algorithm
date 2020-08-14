@@ -1,8 +1,9 @@
-flask
-keras
-pygeohash
-pandas
-matplotlib
-sklearn
-pillow
+flask==1.1.2
+gevent==20.6.2
+keras==2.3.1
+pygeohash==1.2.0
+pandas==1.0.4
+matplotlib==3.2.1
+scikit-learn==0.23.2
+
 

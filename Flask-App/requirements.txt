@@ -1,9 +1,0 @@
-tensorflow
-keras
-pygeohash
-pandas
-matplotlib
-sklearn
-pillow
-flask
-django

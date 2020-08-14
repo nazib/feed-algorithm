@@ -11,6 +11,7 @@ from datetime import datetime
 import keras
 from rank_logics import*
 import pandas as pd
+import time
 
 class vae_model:
     def __init__(self, latent_layers):
@@ -76,6 +77,30 @@ class NonLinearModel(vae_model):
         self.Model, self.z_mean,self.z_log_var = self.Model.create_model()
         self.Model.compile(optimizer='SGD', loss=[ 'mean_squared_logarithmic_error',KL_loss(self.z_mean,self.z_log_var)],
         loss_weights=[1,0.5],metrics=['accuracy'])
+
+        path = os.path.abspath(os.getcwd()+"/logs/")
+        dirs = os.listdir(path)
+        dir_dict ={}
+
+        if len(dirs) == 0:
+            self.istrained = False
+        else:
+            #### Getting Saved model directories and selecting most rect one ####
+            dirs = [path +"/"+ k +"/" for k in dirs]
+            #times = [os.path.getmtime(k) for k in dirs]
+            '''
+            for i in range(len(dirs)):
+                dir_dict[times[i]] = dirs[i]
+            '''
+            self.model_dir = dirs[len(dirs)-1]
+            self.Model.load_weights(self.model_dir+"VAE_noisy.h5")
+            mu = self.Model.get_layer('mu')
+            mu_wgt = mu.get_weights()[1]
+            var = self.Model.get_layer('var')
+            var_wgt = var.get_weights()[1]
+            ### Generating Weights parameters from Distribution ####
+            self.coefficients = mu_wgt + var_wgt
+            self.istrained = True
     
     def fit(self, Data_dir, data_file):
         #Data_dir = "/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/"
@@ -87,7 +112,7 @@ class NonLinearModel(vae_model):
         tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
         data = create_training_data(Data_dir,data_file)
         N,M = data.shape
-        train_ratio = N*80//100
+        train_ratio = N*90//100
         valid_ratio = N*10//100
 
         label_data = data[0:train_ratio,:]
@@ -104,36 +129,89 @@ class NonLinearModel(vae_model):
                         epochs=100,
                         batch_size=500, callbacks=[tensorboard_callback])
         self.Model.save(logdir+"/VAE_noisy.h5")
-        return 0
+        self.istrained = True
+        return "Non Linear Model Trained Successfully"
+    
+    def calculate_weight(self, sid,pid):
+        if sid==0.0 and pid ==0.0:
+            return 0
+        else:
+            return np.exp((sid-pid)/(sid+pid)) 
 
-    def Rank(self,data):
-        model_dir = os.path.abspath(os.getcwd()+"/logs/20200629-155817_noisy/")
-        #model = vae_model([512,256,128,64,32,16,8])
-        #model,_,_ = model.create_model()
-        self.Model.load_weights(model_dir+"/VAE_noisy.h5")
-        mu = self.Model.get_layer('mu')
-        mu_wgt = mu.get_weights()[1]
-        var = self.Model.get_layer('var')
-        var_wgt = var.get_weights()[1]
+    def GlobalRank(self,feed_data):
+        TH= 60*36
+        post_age = feed_data["PostAge"]
+        decay = self.coefficients[2]*np.exp(1-(post_age/TH))
 
-        ### Generating Weights parameters from Distribution ####
-        theta = mu_wgt + var_wgt
-        global_rank = GlobalRank(data, theta)
-        #global_rank.to_csv("Global_Rank_by NN_noisy500.csv",index=False)
-        #print("Processed")
-        return global_rank
+        weights = np.array([self.coefficients[0],
+        self.coefficients[1],
+        self.coefficients[3],
+        self.coefficients[4],
+        self.coefficients[5],
+        self.coefficients[6],
+        self.coefficients[7]
+        ])            
+        data = np.array([feed_data["NumberOfLikes"],
+        feed_data["NumberOfComments"],
+        feed_data["PostTextLength"],
+        feed_data["NumberOfHashTags"],
+        feed_data["Latitude"],
+        feed_data["Longitude"],
+        feed_data["NumberOfMediaUrls"],]
+        )
+
+        feed_rank = np.sum(data*weights*decay)
+        return feed_rank
+
+    def PersonalRank(self,data):
+        feed_data = data["FeedData"]
+        global_rank = self.GlobalRank(feed_data)
+
+        user_data = data["UserData"]
+        poster_data = data["PosterData"]
+        user_weights = {}
+
+        if user_data['UserCity'] == poster_data['PosterCity']:
+            user_weights['city'] = 1.0
+        else:
+            user_weights['city'] = 0.0
+        ### Country weight ###
+        if user_data['UserCountry'] == poster_data['PosterCountry']:
+            user_weights['country'] = 1.0
+        else:
+            user_weights['country'] = 0.0
+        ### Gender weight ###
+        if user_data["UserGender"] == poster_data['PosterGender']:
+            user_weights['gender'] = 1.0
+        else:
+            user_weights['gender'] = 0.0
+        
+        user_weights['total_comments'] = self.calculate_weight(user_data["UserTotalComments"],poster_data["PosterTotalComments"])
+        
+        ### Like weight ###
+        user_weights['total_likes'] = self.calculate_weight(user_data["UserTotalLikes"],poster_data["PosterTotalLikes"])
+
+        ### Follower weight ###
+        user_weights['total_followers'] = self.calculate_weight(user_data["UserNumberOfFollowers"],poster_data["PosterNumberOfFollowers"])
+        ### Status Level weight ###
+        user_weights['level'] = self.calculate_weight(user_data["UserStatusLevel"],poster_data["PosterStatusLevel"])
+
+        user_feature = np.array(list(user_data.values()), dtype=float)
+        weights = np.array(list(user_weights.values()),dtype=float)
+        personal_rank = np.sum(user_feature * weights * global_rank) 
+        return personal_rank, global_rank
 
 
 if __name__ == "__main__":
     obj = NonLinearModel()
     
     #### Train ####
-    obj.fit("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/","AllFeedData.csv")
+    #obj.fit("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/","AllFeedData.csv")
     #### Test #####
     data = pd.read_csv("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/AllFeedData.csv")
     cols = data.columns 
     values = data[cols[3:]].values
-    glb_ranks = obj.predict(values)
+    glb_ranks = obj.Rank(values)
     data["GlobalRanks"] = glb_ranks
     data.sort_values(by=data.columns.values[-1], ascending=False, inplace=True)
     data.to_csv("NonLinearRank.csv")
