@@ -93,8 +93,6 @@ class NonLinearModel(vae_model):
         labels = ['Male','Female']
         self.Enc_gender.fit(labels)
         
-        
-
         if len(dirs) == 0:
             self.istrained = False
         else:
@@ -153,6 +151,7 @@ class NonLinearModel(vae_model):
 
     def GlobalRank(self,feed_data):
         #TH= 60*36
+        output = {}
 
         for i in range(len(feed_data)):
             TH = 3.0
@@ -178,12 +177,16 @@ class NonLinearModel(vae_model):
             feed_data[i]["longitude"],
             feed_data[i]["numberOfMediaUrls"],]
             )
+
+            output[i] = {}
             feed_data[i]["globalRank"] = np.sum(data*weights*decay)
-        return feed_data
+            output[i]['feedItemId'] = feed_data[i]['feedItemId']
+            output[i]['global'] = feed_data[i]['globalRank']
+        return feed_data, output
 
     def PersonalRank(self,data):
         feed_data = data["feedItems"]
-        feed_data = self.GlobalRank(feed_data)
+        feed_data, _ = self.GlobalRank(feed_data)
 
         user_data = data["userAttributes"]
         user_weights = {}
