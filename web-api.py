@@ -62,8 +62,9 @@ def NonGRank():
 @app.route('/nonlinear/personal_rank',methods=['POST'])
 def NonPRank():
     data = flask.request.get_json(force=True)
-    personal_rank, global_rank = nonlin_model.PersonalRank(data)
-    json_obj = {"PersonalRank": personal_rank, "GlobalRank":global_rank}
+    ranks = nonlin_model.PersonalRank(data)
+    json_obj = {}
+    json_obj["feedItemsRank"] = [x for x in ranks.values()]
     return jsonify(json_obj)
 
 if __name__ == "__main__":    

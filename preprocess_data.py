@@ -4,6 +4,7 @@ import glob
 import pygeohash as pg
 import os
 from sklearn import preprocessing
+import geonamescache
 
 def calculate_weight(sid,pid):
     if sid==0.0 and pid ==0.0:
@@ -111,26 +112,42 @@ def prep_user_interaction(Data_dir = "/media/nazib/E20A2DB70A2D899D/Ubuntu_deskt
         'gp:total_comments','gp:total_likes','gp:tv_gender','gp:status_level']]
         user_data = remove_tab(user_data)
 
+#        user_data['country'].replace(['Myanmar (Burma)'], 'Myanmar',inplace=True)
+
         text_data = pd.DataFrame()
-        text_data["city"] = user_data["city"]
-        text_data["country"] = user_data["country"]
+        #text_data["city"] = user_data["city"]
+        #text_data["country"] = user_data["country"]
         text_data["gp:tv_gender"] = user_data["gp:tv_gender"]
         text_data["gp:status_level"] = user_data["gp:status_level"]
         #text_data["gp:tv_groups"] = user_data["gp:tv_groups"]
+        
+        gc = geonamescache.GeonamesCache()
+        countries = list(gc.get_countries_by_names().keys())
+        cities = gc.get_cities()
+        cities = [x['name'] for x in cities.values()]
+        
+        Enc_country = preprocessing.LabelEncoder()
+        Enc_country.fit(countries)
+        Enc_city = preprocessing.LabelEncoder()
+        Enc_city.fit(cities)
 
+        text_data['country'] = Enc_country.transform(user_data['country'].values)
+        text_data['city'] = Enc_country.transform(user_data['city'].values)
+        
         Enc = preprocessing.LabelEncoder()
         Enc_text = text_data.apply(Enc.fit_transform)
         #print(Enc_text.head())
-        user_data["city"] = Enc_text["city"]
-        user_data["country"] = Enc_text["country"]
+
+        user_data["city"] = text_data["city"]
+        user_data["country"] = text_data["country"]
         user_data["gp:tv_gender"] = Enc_text["gp:tv_gender"]
         user_data["gp:status_level"] = Enc_text["gp:status_level"]
-
         user_data.fillna(value=0,inplace=True)
         #user_data.to_csv(Data_dir+"All_User_data.csv", index=False)
         return user_data
 
-
+if __name__=="__main__":
+    prep_user_interaction()
 
 
 
