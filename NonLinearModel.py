@@ -250,7 +250,7 @@ class NonLinearModel(vae_model):
             personal_rank = np.sum(user_feature * weights * feed_data[i]['globalRank'])
 
             output[i]['feedItemId'] = feed_data[i]['feedItemId']
-            output[i]['pesonalised'] = personal_rank
+            output[i]['personalised'] = personal_rank
             output[i]['global'] = feed_data[i]['globalRank']
         
         return output
