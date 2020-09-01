@@ -56,8 +56,10 @@ def LinPRank():
 def NonGRank():
     #data = np.array([12,10,8,3,16,18,20,8],dtype=float)
     data = flask.request.get_json(force=True)
-    rank = nonlin_model.GlobalRank(data["FeedData"])
-    return jsonify(rank)
+    _,ranks = nonlin_model.GlobalRank(data["feedItems"])
+    json_obj = {}
+    json_obj["feedItemsRank"] = [x for x in ranks.values()]
+    return jsonify(json_obj)
 
 @app.route('/nonlinear/personal_rank',methods=['POST'])
 def NonPRank():
