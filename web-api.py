@@ -17,6 +17,10 @@ nonlin_model = None
 lin_model = None
 theta =None
 
+@app.route('/health',methods=['GET'])
+def health_check():
+    status = {200:"Container running successfully"}
+    return jsonify(status)
 
 @app.route('/linear/train_model',methods=['GET'])
 def LinTraining():
