@@ -7,10 +7,12 @@ metadata:
 spec:
   containers:
   - name: liveness
-    image: us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+    image: docker.io/nazib/rankalgorithm:latest #us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
     livenessProbe:
       httpGet:
         path: /health
         port: 5000
       initialDelaySeconds: 3
       periodSeconds: 3
+  imagePullSecrets:
+   - name: testreg

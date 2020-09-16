@@ -18,4 +18,4 @@ EXPOSE 5000
 #CMD ["python", "-m", "ptvsd", "--port", "3000", "--host", "0.0.0.0", "manage.py", "runserver", "0.0.0.0:8080", "--noreload"]
 #CMD ["python", "manage.py","runserver","0.0.0.0:8080"]
 #CMD ["python", "/app/keras_server.py"]
-CMD ["python", "/app/web-api.py"]
+CMD ["python", "/app/webApi.py"]

@@ -44,17 +44,18 @@ def NonTraining():
 def LinGRank():
     #data = np.array([12,10,8,3,16,18,20,8],dtype=float)
     data = flask.request.get_json(force=True)
-    rank = lin_model.GlobalRank(data['FeedData'])
-    rank = {"GlobalRank": rank}
-    return jsonify(rank)
+    _,ranks = lin_model.GlobalRank(data['feedItems'])
+    json_obj = {}
+    json_obj["feedItemsRank"] = [x for x in ranks.values()]
+    return jsonify(json_obj)
 
 @app.route('/linear/personal_rank',methods=['POST'])
 def LinPRank():
     data = flask.request.get_json(force=True)
-    personal_rank, global_rank = lin_model.PersonalRank(data)
-    json_obj = {"PersonalRank": personal_rank, "GlobalRank":global_rank}
+    ranks = lin_model.PersonalRank(data)
+    json_obj = {}
+    json_obj["feedItemsRank"] = [x for x in ranks.values()]
     return jsonify(json_obj)
-
 
 @app.route('/nonlinear/global_rank',methods=['POST'])
 def NonGRank():
@@ -73,10 +74,10 @@ def NonPRank():
     json_obj["feedItemsRank"] = [x for x in ranks.values()]
     return jsonify(json_obj)
 
-if __name__ == "__main__":    
-    #app.run(host="0.0.0.0", port=5000,  threaded=False)
+if __name__ == "__main__":
     nonlin_model = NonLinearModel()
     lin_model = LinearModel("RandomForrest", 0.04)
+    #app.run(host="0.0.0.0", port=5000,  threaded=False)
     http_server = WSGIServer(('0.0.0.0', 5000), app)
     http_server.serve_forever()
 

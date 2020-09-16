@@ -1,0 +1,25 @@
+{
+	"feedItems": [{
+			"feedItemId": "932r3",
+			"numberOfLikes": 10,
+			"numberOfComments": 5,
+			"postedDate": "2020-08-23 12:34:00",
+			"postTextLength": 50,
+			"numberOfHashTags": 10,
+			"latitude": 143.30,
+			"longitude": 30.3,
+			"numberOfMediaUrls": 3
+		},
+		{
+			"feedItemId": "97349",
+			"numberOfLikes": 10,
+			"numberOfComments": 5,
+			"postedDate": "2020-08-23 12:34:00",
+			"postTextLength": 50,
+			"numberOfHashTags": 10,
+			"latitude": 143.30,
+			"longitude": 30.3,
+			"numberOfMediaUrls": 3
+		}
+	]
+}

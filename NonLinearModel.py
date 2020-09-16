@@ -168,7 +168,6 @@ class NonLinearModel(vae_model):
             self.coefficients[6],
             self.coefficients[7]
             ])            
-
             data = np.array([feed_data[i]["numberOfLikes"],
             feed_data[i]["numberOfComments"],
             feed_data[i]["postTextLength"],
@@ -177,7 +176,6 @@ class NonLinearModel(vae_model):
             feed_data[i]["longitude"],
             feed_data[i]["numberOfMediaUrls"],]
             )
-
             output[i] = {}
             feed_data[i]["globalRank"] = np.sum(data*weights*decay)
             output[i]['feedItemId'] = feed_data[i]['feedItemId']

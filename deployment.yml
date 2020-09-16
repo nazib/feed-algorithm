@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feed-rank-service-deployment
+  name: feed-deployment
 spec:
   selector:
     matchLabels:
@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: feed-rank-service
-        image: gcr.io/cedar-talent-279001/feed-algorithm:latest
+        image: docker.io/nazib/rankalgorithm:latest
         imagePullPolicy: Always
         resources:
           requests:
@@ -24,6 +24,9 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 5000
+      imagePullSecrets:
+      - name: testreg
+
 
 ---
 apiVersion: v1
@@ -31,9 +34,11 @@ kind: Service
 metadata:
   name: feed-service
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
-    app: feed-rank
+    app: feed-rank-service
   ports:
   - port: 5000
     targetPort: 5000
+    nodePort: 30001
+
