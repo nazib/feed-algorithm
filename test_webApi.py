@@ -10,6 +10,7 @@ from webApi import app
 import pdb
 import requests
 #@pytest.fixture
+
 def test_health():
     with app.test_client() as c:
         response = c.get('/health')
@@ -34,7 +35,7 @@ def test_NonPrank():
         with open('unit_test/p_data.json') as f:
             json_data = json.load(f)
         #pdb.set_trace()
-        response = requests.post("http://0.0.0.0:5000//nonlinear/personal_rank", json =json_data)
+        response = requests.post("http://0.0.0.0:8080//nonlinear/personal_rank", json =json_data)
         #response = c.get('/nonlinear/personal_rank', query_string=json.dumps(json_data))
         assert response.status_code == 200
 
@@ -43,7 +44,7 @@ def test_NonGrank():
         with open('unit_test/g_data.json') as f:
             json_data = json.load(f)
         #pdb.set_trace()
-        response = requests.post("http://0.0.0.0:5000//nonlinear/global_rank", json =json_data)
+        response = requests.post("http://0.0.0.0:8080//nonlinear/global_rank", json =json_data)
         #response = c.get('/nonlinear/personal_rank', query_string=json.dumps(json_data))
         assert response.status_code == 200
 
@@ -52,7 +53,7 @@ def test_LinGrank():
         with open('unit_test/g_data.json') as f:
             json_data = json.load(f)
         #pdb.set_trace()
-        response = requests.post("http://0.0.0.0:5000//linear/global_rank", json =json_data)
+        response = requests.post("http://0.0.0.0:8080//linear/global_rank", json =json_data)
         #response = c.get('/nonlinear/personal_rank', query_string=json.dumps(json_data))
         assert response.status_code == 200
 
@@ -60,11 +61,10 @@ def test_LinPrank():
     with app.test_client() as c:
         with open('unit_test/p_data.json') as f:
             json_data = json.load(f)
-        response = requests.post("http://0.0.0.0:5000//linear/personal_rank", json =json_data)
+        response = requests.post("http://0.0.0.0:8080//linear/personal_rank", json =json_data)
         #response = c.get('/nonlinear/personal_rank', query_string=json.dumps(json_data))
         assert response.status_code == 200
 
-'''
+
 if __name__=="__main__":
     test_NonPrank()
-'''

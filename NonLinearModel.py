@@ -14,6 +14,7 @@ import pandas as pd
 import time
 from sklearn import preprocessing
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
 class vae_model:
     def __init__(self, latent_layers):
         self.latenet_layers = latent_layers
@@ -90,7 +91,7 @@ class NonLinearModel(vae_model):
         self.Enc_level.fit(labels)
         
         self.Enc_gender = preprocessing.LabelEncoder()
-        labels = ['Male','Female']
+        labels = ['Male','Female','male','female','other','Non-binary','WITHHELD']
         self.Enc_gender.fit(labels)
         
         if len(dirs) == 0:
@@ -256,7 +257,6 @@ class NonLinearModel(vae_model):
 
 if __name__ == "__main__":
     obj = NonLinearModel()
-    
     #### Train ####
     #obj.fit("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/","AllFeedData.csv")
     #### Test #####
@@ -267,6 +267,7 @@ if __name__ == "__main__":
     data["GlobalRanks"] = glb_ranks
     data.sort_values(by=data.columns.values[-1], ascending=False, inplace=True)
     data.to_csv("NonLinearRank.csv")
+
 
 
 
