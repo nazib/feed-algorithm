@@ -155,10 +155,11 @@ class NonLinearModel(vae_model):
         output = {}
 
         for i in range(len(feed_data)):
-            TH = 3.0
+            TH = 3.0 *24*3600 ## 3 days in seconds
             post_date =datetime.strptime(feed_data[i]["postedDate"], "%Y-%m-%d %H:%M:%S")
             curr_date = datetime.now()
-            post_age = float((curr_date - post_date).days)
+            #post_age = float((curr_date - post_date).days)
+            post_age = float((curr_date - post_date).total_seconds())
             decay = self.coefficients[2]*np.exp(1-(post_age/TH))
 
             weights = np.array([self.coefficients[0],

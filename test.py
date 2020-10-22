@@ -1,4 +1,5 @@
 import numpy as np
+'''
 import tensorflow as tf
 from model import*
 import pandas as pd
@@ -40,7 +41,18 @@ test_data = data[train_ratio+1:N,]
 global_rank = GlobalRank(test_data, theta,Data_dir+data_file, train_ratio)
 global_rank.to_csv("Global_Rank_by NN_noisy500.csv",index=False)
 print("Processed")
-
+'''
+time = np.linspace(0,100,100)
+TH= 30
+decay = np.zeros(100)
+for i in range(0,100):
+    if i <30:
+        decay[i] = 100*(100-time[i]/TH)
+    else:
+        decay[i] = np.exp(100-time[i]/TH)
+from matplotlib import pyplot as pl
+pl.plot(time,decay)
+pl.show()
 
 
 
