@@ -1,3 +1,22 @@
+# Quick start
+
+for simplicity this runs tensorflow and the python web server inside the same container, training will be only using CPU, so it will be ssslllooowww (at least relatively)
+
+- install docker-compose (from Docker.app for macos)
+- `docker-compose up`
+- the web server will be on http://localhost:8080
+
+## running tensorboard
+```
+docker ps # check container id of feed-algorithm-web
+docker exec -it CONTAINER_ID bash
+
+tensorboard --logdir=logdir --bind_all # --bind_all to make it listen on 0.0.0.0
+
+```
+
+---
+
 ## File List and their purposes
 
 1. model.py --- Non-linear model definition file.
