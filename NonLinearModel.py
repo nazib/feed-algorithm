@@ -163,7 +163,7 @@ class NonLinearModel(vae_model):
             decay = self.coefficients[2]*np.exp(1-(post_age/TH))
 
             ########## Imposing Gaussian decay on text length for proper balence ##########
-            text_TH = 500
+            text_TH = 300
             text_sigma = 200 
             text_len = feed_data[i]["postTextLength"]
             text_decay = np.exp(-np.power(text_len - text_TH, 2.) / (2 * np.power(text_sigma, 2.)))

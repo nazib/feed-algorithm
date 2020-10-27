@@ -44,7 +44,7 @@ print("Processed")
 '''
 import math
 time = np.linspace(0,1000,1000)
-TH= 500
+TH= 300
 sigma = 200
 decay = np.zeros(100)
 decay = np.exp(-np.power(time - TH, 2.) / (2 * np.power(sigma, 2.)))
