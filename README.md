@@ -1,9 +1,12 @@
 # Quick start
 
-for simplicity this runs tensorflow and the python web server inside the same container, training will be only using CPU, so it will be ssslllooowww (at least relatively)
+for simplicity this runs tensorflow and the python web server inside the same container, training will be only using CPU, so it will be slower than running natively on GPU
 
 - install docker-compose (from Docker.app for macos)
-- `docker-compose up`
+```
+docker-compose build
+docker-compose up
+```
 - the web server will be on http://localhost:8080
 
 ## running tensorboard
