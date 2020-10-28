@@ -1,6 +1,8 @@
-# Python image to use.
-FROM python:3.8
 FROM tensorflow/tensorflow:2.2.0
+# python3.6 comes with this
+
+RUN apt update && \
+    apt install -y mysql-client
 # Set the working directory to /app
 WORKDIR /app
 
@@ -9,7 +11,7 @@ COPY requirements.txt .
 
 # Install any needed packages specified in requirements.txt
 #RUN pip3 install --trusted-host pypi.python.org -r requirements.txt
-RUN pip3 install -r requirements.txt 
+RUN pip3 install -r requirements.txt
 # Copy the rest of the working directory contents into the container at /app
 COPY . .
 

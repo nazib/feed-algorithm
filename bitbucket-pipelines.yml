@@ -51,6 +51,10 @@
 pipelines:
   default:
     - step:
+        name: dummy
+        script:
+          - echo ""
+    - step:
         <<: *build-docker-image
         trigger: manual
     - step: *update-stage-cluster

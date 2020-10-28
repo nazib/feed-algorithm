@@ -1,3 +1,42 @@
+# Quick start
+
+for simplicity this runs tensorflow and the python web server inside the same container, training will be only using CPU, so it will be slower than running natively on GPU
+
+- install docker-compose (from Docker.app for macos)
+```
+docker-compose build
+docker-compose up
+```
+- the web server will be on http://localhost:8080
+
+## running tensorboard
+```
+docker ps # check container id of feed-algorithm-web
+docker exec -it CONTAINER_ID bash
+
+#### 
+tensorboard --logdir=logdir --bind_all # --bind_all to make it listen on 0.0.0.0
+
+```
+
+## train new model with new data
+
+- connect to datascience read replica with gcloud sql proxy
+- run extract_feed_data script outside docker
+```
+MYSQL_USER=xxx MYSQL_PASS=xxx LIMIT=100000 ./extract_feed_data.sh Data/feed_data.tsv
+```
+- run process_data_train_model.py inside docker
+```
+docker ps # check container id of feed-algorithm-web
+docker exec -it CONTAINER_ID bash
+
+#### 
+python process_data_train_model.py
+```
+
+---
+
 ## File List and their purposes
 
 1. model.py --- Non-linear model definition file.
