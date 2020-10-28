@@ -39,7 +39,7 @@ def pre_process_data(Data_dir, processed_file):
         all_data = pd.DataFrame()
 
         for x in files:
-            data = pd.read_csv(x, sep='\t')
+            data = pd.read_csv(x, sep='\t', lineterminator='\n')
             all_data = pd.concat([all_data,data])
 
         m,n = all_data.shape

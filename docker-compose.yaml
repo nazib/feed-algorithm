@@ -6,5 +6,4 @@ services:
       - "8080:8080"
       - "6006:6006" # for tensorboard
     volumes:
-      - ./logs:/app/logs
-      - ./Data:/app/Data
+      - ./:/app
