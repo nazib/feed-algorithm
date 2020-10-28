@@ -163,10 +163,16 @@ class NonLinearModel(vae_model):
             decay = self.coefficients[2]*np.exp(1-(post_age/TH))
 
             ########## Imposing Gaussian decay on text length for proper balence ##########
-            text_TH = 300
-            text_sigma = 200 
+            text_TH = 200
+            text_sigma = 300 
             text_len = feed_data[i]["postTextLength"]
             text_decay = np.exp(-np.power(text_len - text_TH, 2.) / (2 * np.power(text_sigma, 2.)))
+            ########## Imposing Gaussian decay on hashtags for proper balence ##########
+            h_TH = 5
+            h_sigma = 5 
+            hash = feed_data[i]["numberOfHashTags"]
+            h_decay = np.exp(-np.power(hash - h_TH, 2.) / (2 * np.power(h_sigma, 2.)))
+
 
             weights = np.array([self.coefficients[0],
             self.coefficients[1],
@@ -185,7 +191,7 @@ class NonLinearModel(vae_model):
             feed_data[i]["numberOfMediaUrls"],]
             )
             output[i] = {}
-            feed_data[i]["globalRank"] = np.sum(data*weights*decay*text_decay)
+            feed_data[i]["globalRank"] = np.sum(data*weights*decay*text_decay*h_decay)
             output[i]['feedItemId'] = feed_data[i]['feedItemId']
             output[i]['global'] = feed_data[i]['globalRank']
         return feed_data, output

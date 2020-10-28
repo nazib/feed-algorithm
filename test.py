@@ -43,9 +43,9 @@ global_rank.to_csv("Global_Rank_by NN_noisy500.csv",index=False)
 print("Processed")
 '''
 import math
-time = np.linspace(0,1000,1000)
-TH= 300
-sigma = 200
+time = np.linspace(0,100,100)
+TH= 5
+sigma = 5
 decay = np.zeros(100)
 decay = np.exp(-np.power(time - TH, 2.) / (2 * np.power(sigma, 2.)))
 
