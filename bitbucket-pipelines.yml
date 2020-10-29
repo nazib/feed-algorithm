@@ -1,10 +1,9 @@
 .run-tests: &run-tests
   name: Run Tests
-  image: tensorflow/tensorflow:2.2.0
+  image: python:3.8
   caches:
   - pip
   script:
-    - apt update && apt install -y python3-venv
     - python3 -m venv venv
     - source venv/bin/activate
     - pip3 install -r requirements.txt
