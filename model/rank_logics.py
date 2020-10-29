@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from numpy import matlib as mt
-from .utils import calculate_weight
+from model.utils import calculate_weight
 
 ###########################################################################
 #                        Global Feed Ranking Logic                        #

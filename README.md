@@ -4,8 +4,8 @@ for simplicity this runs tensorflow and the python web server inside the same co
 
 - install docker-compose (from Docker.app for macos)
 ```
-docker-compose build
-docker-compose up
+docker-compose build web
+docker-compose up web
 ```
 - the web server will be on http://localhost:8080
 

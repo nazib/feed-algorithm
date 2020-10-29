@@ -5,10 +5,10 @@ from datetime import datetime
 import keras
 import pandas as pd
 from sklearn import preprocessing
-from .model.rank_logics import *
-from .model.vae_model import vae_model
-from .model.preprocess_data import *
-from .model.losses import KL_loss
+from model.rank_logics import *
+from model.vae_model import vae_model
+from model.preprocess_data import *
+from model.losses import KL_loss
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
