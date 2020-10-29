@@ -10,6 +10,7 @@ def create_app(config_filename):
     # app.config.from_pyfile(config_filename)
     nonlin_model = NonLinearModel()
     utils = app_utils(app.logger)
+    print("Model initiated")
 
     @app.errorhandler(400)
     def value_error(e):

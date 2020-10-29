@@ -4,7 +4,6 @@ import datetime
 class app_utils:
   def __init__(self, logger):
     self.logger = logger
-    print("Model initialized")
 
   def check_attributes(self, userdata):
       for x in userdata.keys():
@@ -25,7 +24,7 @@ class app_utils:
                   if userdata[x] == None:
                       userdata[x] = 0.0
                   else:
-                      app.logger.error("{} should be float value".format(x))
+                      self.logger.error("{} should be float value".format(x))
                       abort(
                           400, description='{} should be float value in User/Poster Attribute'.format(x))
 

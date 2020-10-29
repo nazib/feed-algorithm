@@ -1,5 +1,7 @@
 # Quick start
 
+## run with docker-compose (should work on any machine)
+
 for simplicity this runs tensorflow and the python web server inside the same container, training will be only using CPU, so it will be slower than running natively on GPU
 
 - install docker-compose (from Docker.app for macos)
@@ -9,17 +11,16 @@ docker-compose up web
 ```
 - the web server will be on http://localhost:8080
 
-## running tensorboard
+### running tensorboard
 ```
-docker ps # check container id of feed-algorithm-web
-docker exec -it CONTAINER_ID bash
+docker-compose exec web bash
 
 #### 
-tensorboard --logdir=logdir --bind_all # --bind_all to make it listen on 0.0.0.0
+tensorboard --logdir=logdir --bind_all # --bind_all makes it listen on 0.0.0.0
 
 ```
 
-## train new model with new data
+### train new model with new data
 
 - connect to datascience read replica with gcloud sql proxy
 - run extract_feed_data script outside docker
@@ -28,8 +29,7 @@ MYSQL_USER=xxx MYSQL_PASS=xxx LIMIT=100000 ./extract_feed_data.sh Data/feed_data
 ```
 - run process_data_train_model.py inside docker
 ```
-docker ps # check container id of feed-algorithm-web
-docker exec -it CONTAINER_ID bash
+docker-compose exec web bash
 
 #### 
 python process_data_train_model.py
