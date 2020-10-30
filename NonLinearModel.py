@@ -148,7 +148,7 @@ class NonLinearModel(vae_model):
         if sid==0.0 and pid ==0.0:
             return 0
         else:
-            return np.exp((sid-pid)/(sid+pid)) 
+            return np.exp(-np.power(sid - pid, 2.) / (2 * np.power(pid, 2.)))#np.exp((sid-pid)/(sid+pid)) 
 
     def GlobalRank(self,feed_data):
         #TH= 60*36
