@@ -5,10 +5,10 @@ from datetime import datetime
 import keras
 import pandas as pd
 from sklearn import preprocessing
-from model.rank_logics import *
 from model.vae_model import vae_model
-from model.preprocess_data import *
+from model.preprocess_data import create_training_data
 from model.losses import KL_loss
+from model.utils import calculate_weight
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
@@ -16,8 +16,9 @@ class NonLinearModel(vae_model):
     def __init__(self):
         self.Model = vae_model([512, 256, 128, 64, 32, 16, 8])
         self.Model, self.z_mean, self.z_log_var = self.Model.create_model()
-        self.Model.compile(optimizer='SGD', loss=['mean_squared_logarithmic_error', KL_loss(self.z_mean, self.z_log_var)],
-                           loss_weights=[1, 0.5], metrics=['accuracy'])
+        self.Model.compile(
+            optimizer='SGD', loss=['mean_squared_logarithmic_error', KL_loss(self.z_mean, self.z_log_var)],
+            loss_weights=[1, 0.5], metrics=['accuracy'])
 
         path = os.path.abspath(os.getcwd()+"/logs/")
         dirs = os.listdir(path)
@@ -76,19 +77,14 @@ class NonLinearModel(vae_model):
         np.random.shuffle(train_data)
         np.random.shuffle(valid_data)
 
-        self.Model.fit(train_data, [label_data, label_data],
-                       validation_data=(valid_data, [valid_data, valid_data]),
-                       epochs=100,
-                       batch_size=500, callbacks=[tensorboard_callback])
+        self.Model.fit(
+            train_data, [label_data, label_data],
+            validation_data=(valid_data, [valid_data, valid_data]),
+            epochs=100,
+            batch_size=500, callbacks=[tensorboard_callback])
         self.Model.save(logdir+"/VAE_noisy.h5")
         self.istrained = True
         return "Non Linear Model Trained Successfully"
-
-    def calculate_weight(self, sid, pid):
-        if sid == 0.0 and pid == 0.0:
-            return 0
-        else:
-            return np.exp(-np.power(sid - pid, 2.) / (2 * np.power(pid, 2.)))#np.exp((sid-pid)/(sid+pid))
 
     def GlobalRank(self, feed_data):
         #TH= 60*36
@@ -116,22 +112,27 @@ class NonLinearModel(vae_model):
             h_decay = np.exp(-np.power(hash - h_TH, 2.) /
                              (2 * np.power(h_sigma, 2.)))
 
-            weights = np.array([self.coefficients[0],
-                                self.coefficients[1],
-                                self.coefficients[3],
-                                self.coefficients[4],
-                                self.coefficients[5],
-                                self.coefficients[6],
-                                self.coefficients[7]
-                                ])
-            data = np.array([feed_data[i]["numberOfLikes"],
-                             feed_data[i]["numberOfComments"],
-                             feed_data[i]["postTextLength"],
-                             feed_data[i]["numberOfHashTags"],
-                             feed_data[i]["latitude"],
-                             feed_data[i]["longitude"],
-                             feed_data[i]["numberOfMediaUrls"], ]
-                            )
+            weights = np.array(
+                [
+                    self.coefficients[0],
+                    self.coefficients[1],
+                    self.coefficients[3],
+                    self.coefficients[4],
+                    self.coefficients[5],
+                    self.coefficients[6],
+                    self.coefficients[7]
+                ])
+            data = np.array(
+                [
+                    feed_data[i]["numberOfLikes"],
+                    feed_data[i]["numberOfComments"],
+                    feed_data[i]["postTextLength"],
+                    feed_data[i]["numberOfHashTags"],
+                    feed_data[i]["latitude"],
+                    feed_data[i]["longitude"],
+                    feed_data[i]["numberOfMediaUrls"],
+                ]
+            )
             output[i] = {}
             feed_data[i]["globalRank"] = np.sum(
                 data*weights*decay*text_decay*h_decay)
@@ -174,15 +175,15 @@ class NonLinearModel(vae_model):
             else:
                 user_weights[i]['gender'] = 0.0
 
-            user_weights[i]['totalReceivedPostComments'] = self.calculate_weight(
+            user_weights[i]['totalReceivedPostComments'] = calculate_weight(
                 user_data["totalReceivedPostComments"], poster_data["totalReceivedPostComments"])
 
             ### Like weight ###
-            user_weights[i]['totalReceivedPostLikes'] = self.calculate_weight(
+            user_weights[i]['totalReceivedPostLikes'] = calculate_weight(
                 user_data["totalReceivedPostLikes"], poster_data["totalReceivedPostLikes"])
 
             ### Follower weight ###
-            user_weights[i]['numberOfFollowers'] = self.calculate_weight(
+            user_weights[i]['numberOfFollowers'] = calculate_weight(
                 user_data["numberOfFollowers"], poster_data["numberOfFollowers"])
 
             ### Status Level weight ###
@@ -190,26 +191,31 @@ class NonLinearModel(vae_model):
                 np.array([user_data['statusLevel']]))
             poster_level = self.Enc_level.transform(
                 np.array([poster_data['statusLevel']]))
-            user_weights[i]['statusLevel'] = self.calculate_weight(
+            user_weights[i]['statusLevel'] = calculate_weight(
                 user_level, poster_level)
 
             #### creating Feature Array ###
             #user_feature = np.array(list(user_data.values()), dtype=float)
-            user_feature = np.array([user_gender,
-                                     user_data['totalReceivedPostComments'],
-                                     user_data['totalReceivedPostLikes'],
-                                     user_data["numberOfFollowers"],
-                                     user_level], dtype=float
-                                    )
+            user_feature = np.array(
+                [
+                    user_gender,
+                    user_data['totalReceivedPostComments'],
+                    user_data['totalReceivedPostLikes'],
+                    user_data["numberOfFollowers"],
+                    user_level
+                ], dtype=float
+            )
 
             ### Creating Weights Array ###
             #weights = np.array(list(user_weights.values()),dtype=float)
-            weights = np.array([user_weights[i]["gender"],
-                                user_weights[i]['totalReceivedPostComments'],
-                                user_weights[i]['totalReceivedPostLikes'],
-                                user_weights[i]["numberOfFollowers"],
-                                user_weights[i]['statusLevel']], dtype=float
-                               )
+            weights = np.array(
+                [
+                    user_weights[i]["gender"],
+                    user_weights[i]['totalReceivedPostComments'],
+                    user_weights[i]['totalReceivedPostLikes'],
+                    user_weights[i]["numberOfFollowers"],
+                    user_weights[i]['statusLevel']], dtype=float
+            )
             personal_rank = np.sum(
                 user_feature * weights * feed_data[i]['globalRank'])
 
@@ -218,18 +224,3 @@ class NonLinearModel(vae_model):
             output[i]['global'] = feed_data[i]['globalRank']
 
         return output
-
-
-if __name__ == "__main__":
-    obj = NonLinearModel()
-    #### Train ####
-    # obj.fit("/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/","AllFeedData.csv")
-    #### Test #####
-    data = pd.read_csv(
-        "/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/AllFeedData.csv")
-    cols = data.columns
-    values = data[cols[3:]].values
-    glb_ranks = obj.Rank(values)
-    data["GlobalRanks"] = glb_ranks
-    data.sort_values(by=data.columns.values[-1], ascending=False, inplace=True)
-    data.to_csv("NonLinearRank.csv")

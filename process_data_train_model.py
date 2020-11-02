@@ -1,6 +1,6 @@
 import os
 from model.preprocess_data import preprocess_data
-from NonLinearModel import NonLinearModel
+from model.NonLinearModel import NonLinearModel
 
 DATA_PATH = os.path.join(os.getcwd(), "Data") + "/"
 FILE_NAME = "AllFeedData.csv"
