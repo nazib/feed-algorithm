@@ -1,9 +1,10 @@
+import os
 import flask
-from flask import jsonify, abort
+from flask import jsonify
 from NonLinearModel import NonLinearModel
 from gevent.pywsgi import WSGIServer
-import os
 from app_utils import app_utils
+
 
 def create_app(config_filename):
     app = flask.Flask(__name__)
