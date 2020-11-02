@@ -10,6 +10,7 @@
 .build-docker-image: &build-docker-image
   services:
     - docker
+  size: 2x
   name: Build Docker Image
   image: google/cloud-sdk:latest
   script:
