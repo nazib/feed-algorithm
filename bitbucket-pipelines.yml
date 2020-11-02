@@ -14,8 +14,7 @@
     - echo "${DEPLOYMENT_SVC_ACCOUNT_KEY}" > /gcr.key
     - gcloud auth activate-service-account $DEPLOYMENT_SVC_ACCOUNT --key-file=/gcr.key
     - gcloud auth configure-docker --quiet
-    - chown -R 165586:165586 $BITBUCKET_CLONE_DIR # wtf with bitbucket https://community.atlassian.com/t5/Bitbucket-articles/Changes-to-make-your-containers-more-secure-on-Bitbucket/ba-p/998464
-    - docker build --no-cache --build-arg VERSION=${BITBUCKET_BUILD_NUMBER}-${BITBUCKET_COMMIT:0:7} -t us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} .
+    - docker build --build-arg VERSION=${BITBUCKET_BUILD_NUMBER}-${BITBUCKET_COMMIT:0:7} -t us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} .
     # Docker image is also repeating actions from above
     - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
 
@@ -65,7 +64,6 @@ pipelines:
 
   branches:
     develop:
-      - step: *run-tests
       - step: *build-docker-image
       - step: *update-stage-cluster
       - step: # production is only on develop, and then optional
