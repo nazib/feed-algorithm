@@ -7,12 +7,13 @@ WORKDIR /app
 
 # copy the requirements file used for dependencies
 COPY requirements.txt .
-COPY . .
 
 # Install any needed packages specified in requirements.txt
 #RUN pip3 install --trusted-host pypi.python.org -r requirements.txt
 RUN pip3 install --user -r requirements.txt
 # Copy the rest of the working directory contents into the container at /app
+
+COPY . .
 
 # Start the server when the container launches
 CMD ["python", "/app/app.py"]
