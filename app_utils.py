@@ -21,7 +21,7 @@ class app_utils:
 
           if x == "totalReceivedPostComments" or x == "totalReceivedPostLikes" or x == "numberOfFollowers":
               if not isinstance(userdata[x], (float, int)):
-                  if userdata[x] == None:
+                  if userdata[x] is None:
                       userdata[x] = 0.0
                   else:
                       self.logger.error("{} should be float value".format(x))
@@ -45,7 +45,7 @@ class app_utils:
                       key == 'postTextLength' or \
                       key == 'numberOfHashTags' or key == 'latitude' or key == 'longitude' or key == 'numberOfMediaUrls':
                   if not isinstance(feed[key], (float, int)):
-                      if feed[key] == None:
+                      if feed[key] is None:
                           feed[key] = 0.0
                       else:
                           self.logger.error("Value of {} is not appropriate in Feed ID {}".format(
