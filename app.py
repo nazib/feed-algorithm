@@ -43,7 +43,6 @@ def create_app(config_filename):
 
 
 if __name__ == "__main__":
-    app = create_app('production')
     port = int(os.getenv('PORT', 8080))
-    http_server = WSGIServer(('0.0.0.0', port), app)
+    http_server = WSGIServer(('0.0.0.0', port), create_app('production'))
     http_server.serve_forever()
