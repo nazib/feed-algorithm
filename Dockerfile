@@ -14,7 +14,7 @@ RUN apt-get update \
     && apt-get clean all && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # clean up
-RUN apt-get remove curl gnupg lsb-release -y
+RUN apt-get remove gnupg lsb-release -y
 
 # Set the working directory to /app
 WORKDIR /app

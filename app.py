@@ -10,6 +10,8 @@ def create_app(config_filename):
     app = flask.Flask(__name__)
     # app.config.from_pyfile(config_filename)
     utils = app_utils(app.logger)
+    nonlin_model = NonLinearModel()
+    print("Model initiated")
 
     @app.errorhandler(400)
     def value_error(e):
@@ -22,8 +24,6 @@ def create_app(config_filename):
 
     @app.route('/nonlinear/global_rank', methods=['POST'])
     def NonGRank():
-        nonlin_model = NonLinearModel()
-        print("Model initiated")
         data = flask.request.get_json(force=True)
         _, ranks = nonlin_model.GlobalRank(data["feedItems"])
         json_obj = {}
@@ -32,8 +32,6 @@ def create_app(config_filename):
 
     @app.route('/nonlinear/personal_rank', methods=['POST'])
     def NonPRank():
-        nonlin_model = NonLinearModel()
-        print("Model initiated")
         data = flask.request.get_json(force=True)
         utils.check_json(data)
         ranks = nonlin_model.PersonalRank(data)
