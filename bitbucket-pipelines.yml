@@ -14,7 +14,6 @@
     - echo "${DEPLOYMENT_SVC_ACCOUNT_KEY}" > /gcr.key
     - gcloud auth activate-service-account $DEPLOYMENT_SVC_ACCOUNT --key-file=/gcr.key
     - gcloud auth configure-docker --quiet
-    - find / -uid 165586 -ls
     - docker build --no-cache --build-arg VERSION=${BITBUCKET_BUILD_NUMBER}-${BITBUCKET_COMMIT:0:7} -t us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} .
     # Docker image is also repeating actions from above
     - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
