@@ -4,7 +4,7 @@
   caches:
   - pip
   script:
-    - pip3 install --ignore-installed -r requirements.txt
+    - pip3 install -r requirements.txt
     - python -m pytest
 
 .build-docker-image: &build-docker-image
@@ -75,7 +75,3 @@ pipelines:
       - step: # production is only on develop, and then optional
           trigger: manual
           <<: *deploy-production
-
-definitions:
-  docker:
-    memory: 4096
