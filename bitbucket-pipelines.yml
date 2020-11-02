@@ -1,3 +1,12 @@
+.run-tests: &run-tests
+  name: Run Tests
+  image: tensorflow/tensorflow:2.2.0
+  caches:
+  - pip
+  script:
+    - pip3 install --ignore-installed -r requirements.txt
+    - python -m pytest
+
 .build-docker-image: &build-docker-image
   services:
     - docker
@@ -50,10 +59,7 @@
 
 pipelines:
   default:
-    - step:
-        name: dummy
-        script:
-          - echo ""
+    - step: *run-tests
     - step:
         <<: *build-docker-image
         trigger: manual
@@ -61,6 +67,7 @@ pipelines:
 
   branches:
     develop:
+      - step: *run-tests
       - step: *build-docker-image
       - step: *update-stage-cluster
       - step: # production is only on develop, and then optional
