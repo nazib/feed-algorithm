@@ -20,8 +20,9 @@ class vae_model:
         return z_mean + K.exp(0.5 * z_log_var) * epsilon
 
     def myConv(self, x_in, nf, strides=1, rate=1):
-        x_out = Conv1D(nf, kernel_size=3, padding='same',
-                       kernel_initializer='he_normal', strides=strides)(x_in)
+        x_out = Conv1D(
+            nf, kernel_size=3, padding='same',
+            kernel_initializer='he_normal', strides=strides)(x_in)
         x_out = LeakyReLU(0.2)(x_out)
         return x_out
 
