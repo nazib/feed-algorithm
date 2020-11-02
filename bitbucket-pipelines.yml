@@ -8,6 +8,8 @@
     - python -m pytest
 
 .build-docker-image: &build-docker-image
+  caches:
+    - docker
   services:
     - docker
   name: Build Docker Image
