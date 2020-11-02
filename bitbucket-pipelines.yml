@@ -1,8 +1,6 @@
 .run-tests: &run-tests
   name: Run Tests
   image: tensorflow/tensorflow:2.2.0
-  caches:
-  - pip
   script:
     - pip3 install -r requirements.txt
     - python -m pytest
