@@ -1,1 +1,2 @@
-Data/*.tsv
+/Data
+/logs
