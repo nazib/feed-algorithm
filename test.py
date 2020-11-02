@@ -47,8 +47,8 @@ time = np.linspace(0,100,100)
 TH= 5
 sigma = 5
 decay = np.zeros(100)
-decay = np.exp(-np.power(time - TH, 2.) / (2 * np.power(sigma, 2.)))
-
+#decay = np.exp(-np.power(time - TH, 2.) / (2 * np.power(sigma, 2.)))
+decay = np.exp((time-TH)/(time+sigma+TH))
 from matplotlib import pyplot as pl
 pl.plot(time,decay)
 pl.show()
