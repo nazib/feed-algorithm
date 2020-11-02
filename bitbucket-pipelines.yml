@@ -10,7 +10,6 @@
 .build-docker-image: &build-docker-image
   services:
     - docker
-  size: 2x
   name: Build Docker Image
   image: google/cloud-sdk:latest
   script:
@@ -74,6 +73,7 @@ pipelines:
       - step: # production is only on develop, and then optional
           trigger: manual
           <<: *deploy-production
-options:
-  docker: true
 
+definitions:
+  docker:
+    memory: 2048
