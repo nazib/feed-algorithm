@@ -5,6 +5,8 @@
   - pip
   script:
     - pip3 install -r requirements.txt
+    - mkdir -p Data
+    - cp -R -u ./base_data/Data ./
     - python -m pytest
 
 .build-docker-image: &build-docker-image

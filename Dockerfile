@@ -16,4 +16,4 @@ RUN pip3 install --user -r requirements.txt
 COPY . .
 
 # Start the server when the container launches
-CMD ["python", "/app/app.py"]
+CMD ["/app/entrypoint.sh"]
