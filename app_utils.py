@@ -78,7 +78,7 @@ class app_utils:
                 elif key == 'posterAttributes':
                     self.check_attributes(feed[key])
                 else:
-                    self.logger.error("Please Check payload {}", feed[key])
+                    self.logger.error("Please Check payload {}".format(feed[key]))
                     abort(400, description='Please Check payload')
 
     def check_json(self, data):

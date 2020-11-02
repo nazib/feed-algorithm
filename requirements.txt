@@ -12,9 +12,13 @@ Flask==1.1.2
 gast==0.3.3
 geonamescache==1.2.0
 gevent==20.6.2
+google-api-core==1.23.0
 google-auth==1.22.1
 google-auth-oauthlib==0.4.2
+google-cloud-core==1.4.3
+google-cloud-logging==1.15.1
 google-pasta==0.2.0
+googleapis-common-protos==1.52.0
 greenlet==0.4.17
 grpcio==1.33.2
 h5py==2.10.0
