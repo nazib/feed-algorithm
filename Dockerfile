@@ -11,7 +11,7 @@ COPY . .
 
 # Install any needed packages specified in requirements.txt
 #RUN pip3 install --trusted-host pypi.python.org -r requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install --user -r requirements.txt
 # Copy the rest of the working directory contents into the container at /app
 
 # Start the server when the container launches
