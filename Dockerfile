@@ -2,6 +2,20 @@ FROM tensorflow/tensorflow:2.2.0
 # python3.6 comes with this
 RUN apt update && \
     apt install -y mysql-client
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends \
+    curl gnupg lsb-release \
+    && export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s` \
+    && echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | tee /etc/apt/sources.list.d/gcsfuse.list \
+    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+    && apt-get update \
+    && apt-get install --yes gcsfuse \
+    && apt-get clean all && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# clean up
+RUN apt-get remove curl gnupg lsb-release -y
+
 # Set the working directory to /app
 WORKDIR /app
 
