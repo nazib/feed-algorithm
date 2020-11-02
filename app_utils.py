@@ -1,10 +1,10 @@
 from flask import abort
 import datetime
-
+import logging
 
 class app_utils:
     def __init__(self, logger):
-        self.logger = logger
+        self.logger: logging.Logger = logger
 
     def check_attributes(self, userdata):
         for x in userdata.keys():
@@ -78,7 +78,7 @@ class app_utils:
                 elif key == 'posterAttributes':
                     self.check_attributes(feed[key])
                 else:
-                    self.logger.error("Please Check payload ")
+                    self.logger.error("Please Check payload {}", feed[key])
                     abort(400, description='Please Check payload')
 
     def check_json(self, data):
