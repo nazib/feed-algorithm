@@ -1,8 +1,11 @@
 FROM tensorflow/tensorflow:2.2.0
 # python3.6 comes with this
+
+# need mysql client to query data
 RUN apt update && \
     apt install -y mysql-client
 
+# need gcsfuse to save model to bucket
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends \
     curl gnupg lsb-release \
@@ -13,8 +16,13 @@ RUN apt-get update \
     && apt-get install --yes gcsfuse \
     && apt-get clean all && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# need kubectl to restart deployment
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
+    chmod +x ./kubectl && \
+    mv ./kubectl /usr/local/bin/kubectl
+
 # clean up
-RUN apt-get remove gnupg lsb-release -y
+RUN apt-get remove curl gnupg lsb-release -y
 
 # Set the working directory to /app
 WORKDIR /app
