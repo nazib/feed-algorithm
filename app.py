@@ -4,18 +4,15 @@ from flask import jsonify
 from model.NonLinearModel import NonLinearModel
 from gevent.pywsgi import WSGIServer
 from app_utils import app_utils, use_gcloud_logging
-import logging
-
 
 def create_app(config_filename):
     app = flask.Flask(__name__)
-    logger: logging.Logger = app.logger
     # app.config.from_pyfile(config_filename)
     utils = app_utils(app.logger)
     nonlin_model = NonLinearModel()
     if not nonlin_model.istrained:
         raise Exception("no trained model found")
-    logger.info("Model initiated " + nonlin_model.model_path)
+    app.logger.info("Model initiated " + nonlin_model.model_path)
 
     @app.errorhandler(400)
     def value_error(e):

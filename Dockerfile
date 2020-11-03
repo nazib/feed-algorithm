@@ -23,6 +23,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
 
 # clean up
 RUN apt-get remove curl gnupg lsb-release -y
+RUN apt-get autoremove -y
 
 # Set the working directory to /app
 WORKDIR /app
