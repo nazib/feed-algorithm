@@ -5,7 +5,6 @@ from model.NonLinearModel import NonLinearModel
 from gevent.pywsgi import WSGIServer
 from app_utils import app_utils, use_gcloud_logging
 
-
 def create_app(config_filename):
     app = flask.Flask(__name__)
     # app.config.from_pyfile(config_filename)
