@@ -17,7 +17,8 @@ def get_global_model_load_path():
     logs_dir = os.path.abspath(os.getcwd()+"/logs")
     files = sorted(
         glob.glob(logs_dir + "/**/VAE_noisy.h5"),
-        key=os.path.getmtime)
+        key=os.path.getmtime,
+        reverse=True)
 
     if len(files) <= 0:
         return ''
