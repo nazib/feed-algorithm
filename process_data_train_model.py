@@ -1,13 +1,11 @@
 import os
+from model.preprocess_data import preprocess_data
+from model.NonLinearModel import NonLinearModel
 
-from preprocess_data import *
-from NonLinearModel import NonLinearModel
-from pathlib import Path
-
-dataPath = os.path.join(os.getcwd(),"Data") + "/"
-fileName = "AllFeedData.csv"
+DATA_PATH = os.path.join(os.getcwd(), "Data") + "/"
+FILE_NAME = "AllFeedData.csv"
 
 if __name__ == "__main__":
-  pre_process_data(dataPath, fileName)
-  model = NonLinearModel()
-  model.fit(dataPath, fileName)
+    preprocess_data(DATA_PATH, FILE_NAME)
+    model = NonLinearModel()
+    model.fit(DATA_PATH, FILE_NAME)

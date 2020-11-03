@@ -7,3 +7,16 @@ services:
       - "6006:6006" # for tensorboard
     volumes:
       - ./:/app
+  test:
+    image: tensorflow/tensorflow:2.2.0
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command:
+      - bash
+      - -c
+      - |
+        pip install --ignore-installed -r requirements.txt;
+        python;

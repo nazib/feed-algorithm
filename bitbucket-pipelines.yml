@@ -1,3 +1,12 @@
+.run-tests: &run-tests
+  name: Run Tests
+  image: tensorflow/tensorflow:2.2.0
+  caches:
+  - pip
+  script:
+    - pip3 install -r requirements.txt
+    - python -m pytest
+
 .build-docker-image: &build-docker-image
   services:
     - docker
@@ -7,7 +16,6 @@
     - echo "${DEPLOYMENT_SVC_ACCOUNT_KEY}" > /gcr.key
     - gcloud auth activate-service-account $DEPLOYMENT_SVC_ACCOUNT --key-file=/gcr.key
     - gcloud auth configure-docker --quiet
-    - docker login -u "_json_key" -p "${GCR_JSON_KEY}" https://us.gcr.io
     - docker build --build-arg VERSION=${BITBUCKET_BUILD_NUMBER}-${BITBUCKET_COMMIT:0:7} -t us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} .
     # Docker image is also repeating actions from above
     - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
@@ -50,10 +58,7 @@
 
 pipelines:
   default:
-    - step:
-        name: dummy
-        script:
-          - echo ""
+    - step: *run-tests
     - step:
         <<: *build-docker-image
         trigger: manual
@@ -61,11 +66,9 @@ pipelines:
 
   branches:
     develop:
+      - step: *run-tests
       - step: *build-docker-image
       - step: *update-stage-cluster
       - step: # production is only on develop, and then optional
           trigger: manual
           <<: *deploy-production
-options:
-  docker: true
-
