@@ -165,14 +165,13 @@ class NonLinearModel(vae_model):
             ########## Imposing Gaussian decay on text length for proper balence ##########
             text_TH = 200
             text_sigma = 300 
-            text_len = feed_data[i]["postTextLength"]
+            text_len = feed_data[i]["postTextWordCount"]
             text_decay = np.exp(-np.power(text_len - text_TH, 2.) / (2 * np.power(text_sigma, 2.)))
             ########## Imposing Gaussian decay on hashtags for proper balence ##########
             h_TH = 5
             h_sigma = 5 
             hash = feed_data[i]["numberOfHashTags"]
             h_decay = np.exp(-np.power(hash - h_TH, 2.) / (2 * np.power(h_sigma, 2.)))
-
 
             weights = np.array([self.coefficients[0],
             self.coefficients[1],
@@ -184,7 +183,7 @@ class NonLinearModel(vae_model):
             ])            
             data = np.array([feed_data[i]["numberOfLikes"],
             feed_data[i]["numberOfComments"],
-            feed_data[i]["postTextLength"],
+            feed_data[i]["postTextWordCount"],
             feed_data[i]["numberOfHashTags"],
             feed_data[i]["latitude"],
             feed_data[i]["longitude"],
