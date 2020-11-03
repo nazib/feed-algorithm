@@ -1,10 +1,18 @@
 from flask import abort
 import datetime
+import logging
 
+
+def use_gcloud_logging():
+    import google.cloud.logging
+    # google cloud logging
+    client = google.cloud.logging.Client()
+    client.get_default_handler()
+    client.setup_logging()
 
 class app_utils:
     def __init__(self, logger):
-        self.logger = logger
+        self.logger: logging.Logger = logger
 
     def check_attributes(self, userdata):
         for x in userdata.keys():
@@ -77,9 +85,6 @@ class app_utils:
                                 feed['feedItemId']))
                 elif key == 'posterAttributes':
                     self.check_attributes(feed[key])
-                else:
-                    self.logger.error("Please Check payload ")
-                    abort(400, description='Please Check payload')
 
     def check_json(self, data):
         for x in data.keys():
@@ -87,5 +92,3 @@ class app_utils:
                 self.check_attributes(data['userAttributes'])
             elif x == 'feedItems':
                 self.check_feeditems(data['feedItems'])
-            else:
-                abort(400, description='Data attributes are not correct in the payload')

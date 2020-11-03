@@ -1,14 +1,12 @@
 import numpy as np
 import tensorflow as tf
-import os
 from datetime import datetime
 import keras
-import pandas as pd
 from sklearn import preprocessing
 from model.vae_model import vae_model
 from model.preprocess_data import create_training_data
 from model.losses import KL_loss
-from model.utils import calculate_weight
+from model.utils import calculate_weight, get_global_model_load_path, get_global_model_save_path
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
@@ -20,9 +18,7 @@ class NonLinearModel(vae_model):
             optimizer='SGD', loss=['mean_squared_logarithmic_error', KL_loss(self.z_mean, self.z_log_var)],
             loss_weights=[1, 0.5], metrics=['accuracy'])
 
-        path = os.path.abspath(os.getcwd()+"/logs/")
-        dirs = os.listdir(path)
-        dir_dict = {}
+        model_path = get_global_model_load_path()
 
         # Defini Lebel Encoders for Country, City and StatusLevel. Only Statuslevel is implemented
         # Other two will implemented in future ###
@@ -35,18 +31,17 @@ class NonLinearModel(vae_model):
                   'other', 'Non-binary', 'WITHHELD']
         self.Enc_gender.fit(labels)
 
-        if len(dirs) == 0:
+        if not bool(model_path):
             self.istrained = False
         else:
             #### Getting Saved model directories and selecting most rect one ####
-            dirs = [path + "/" + k + "/" for k in dirs]
+            # dirs = [path + "/" + k + "/" for k in dirs]
             #times = [os.path.getmtime(k) for k in dirs]
             '''
             for i in range(len(dirs)):
                 dir_dict[times[i]] = dirs[i]
             '''
-            self.model_dir = dirs[len(dirs)-1]
-            self.Model.load_weights(self.model_dir+"VAE_noisy.h5")
+            self.Model.load_weights(model_path)
             mu = self.Model.get_layer('mu')
             mu_wgt = mu.get_weights()[1]
             var = self.Model.get_layer('var')
@@ -56,12 +51,7 @@ class NonLinearModel(vae_model):
             self.istrained = True
 
     def fit(self, Data_dir, data_file):
-        #Data_dir = "/media/nazib/E20A2DB70A2D899D/Ubuntu_desktop/Travello/RawData/new_feed_data/"
-        #user_data = prep_user_interaction()
-        if not os.path.exists("logs"):
-            os.mkdir("logs")
-
-        logdir = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S_noisy")
+        (logdir, model_path) = get_global_model_save_path()
         tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
         data = create_training_data(Data_dir, data_file)
         N, M = data.shape
@@ -82,7 +72,7 @@ class NonLinearModel(vae_model):
             validation_data=(valid_data, [valid_data, valid_data]),
             epochs=100,
             batch_size=500, callbacks=[tensorboard_callback])
-        self.Model.save(logdir+"/VAE_noisy.h5")
+        self.Model.save(model_path)
         self.istrained = True
         return "Non Linear Model Trained Successfully"
 

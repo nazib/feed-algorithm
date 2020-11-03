@@ -3,13 +3,13 @@ import flask
 from flask import jsonify
 from model.NonLinearModel import NonLinearModel
 from gevent.pywsgi import WSGIServer
-from app_utils import app_utils
-
+from app_utils import app_utils, use_gcloud_logging
 
 def create_app(config_filename):
     app = flask.Flask(__name__)
     # app.config.from_pyfile(config_filename)
     utils = app_utils(app.logger)
+    nonlin_model = NonLinearModel()
     print("Model initiated")
 
     @app.errorhandler(400)
@@ -23,8 +23,8 @@ def create_app(config_filename):
 
     @app.route('/nonlinear/global_rank', methods=['POST'])
     def NonGRank():
-        nonlin_model = NonLinearModel()
         data = flask.request.get_json(force=True)
+        utils.check_json(data)
         _, ranks = nonlin_model.GlobalRank(data["feedItems"])
         json_obj = {}
         json_obj["feedItemsRank"] = [x for x in ranks.values()]
@@ -32,7 +32,6 @@ def create_app(config_filename):
 
     @app.route('/nonlinear/personal_rank', methods=['POST'])
     def NonPRank():
-        nonlin_model = NonLinearModel()
         data = flask.request.get_json(force=True)
         utils.check_json(data)
         ranks = nonlin_model.PersonalRank(data)
@@ -44,6 +43,7 @@ def create_app(config_filename):
 
 
 if __name__ == "__main__":
+    use_gcloud_logging()
     port = int(os.getenv('PORT', 8080))
     http_server = WSGIServer(('0.0.0.0', port), create_app('production'))
     http_server.serve_forever()
