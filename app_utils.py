@@ -59,6 +59,7 @@ class app_utils:
                     'numberOfLikes',
                     'numberOfComments',
                     'postTextLength',
+                    'postTextWordCount',
                     'numberOfHashTags',
                     'latitude',
                     'longitude',
