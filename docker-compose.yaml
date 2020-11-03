@@ -20,9 +20,7 @@ services:
       - bash
       - -c
       - |
-        mkdir -p logs
-        cp -R -n ./base_data/logs ./
-        mkdir -p Data
-        cp -R -n ./base_data/Data ./
-        pip install --ignore-installed -r requirements.txt;
+        pip install -r requirements.txt;
+        mkdir -p logs;
+        cp -R -n ./base_data/logs ./;
         python;

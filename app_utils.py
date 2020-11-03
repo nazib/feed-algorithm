@@ -2,6 +2,14 @@ from flask import abort
 import datetime
 import logging
 
+
+def use_gcloud_logging():
+    import google.cloud.logging
+    # google cloud logging
+    client = google.cloud.logging.Client()
+    client.get_default_handler()
+    client.setup_logging()
+
 class app_utils:
     def __init__(self, logger):
         self.logger: logging.Logger = logger

@@ -3,15 +3,10 @@ import flask
 from flask import jsonify
 from model.NonLinearModel import NonLinearModel
 from gevent.pywsgi import WSGIServer
-from app_utils import app_utils
-import google.cloud.logging
+from app_utils import app_utils, use_gcloud_logging
+
 
 def create_app(config_filename):
-    # google cloud logging
-    client = google.cloud.logging.Client()
-    client.get_default_handler()
-    client.setup_logging()
-
     app = flask.Flask(__name__)
     # app.config.from_pyfile(config_filename)
     utils = app_utils(app.logger)
@@ -48,6 +43,7 @@ def create_app(config_filename):
 
 
 if __name__ == "__main__":
+    use_gcloud_logging()
     port = int(os.getenv('PORT', 8080))
     http_server = WSGIServer(('0.0.0.0', port), create_app('production'))
     http_server.serve_forever()
