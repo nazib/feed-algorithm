@@ -10,7 +10,7 @@ if [[ -z "$user" && -z "$pass" ]]; then
   exit 1
 fi
 
-read -d '' feedQuery <<EOF
+feedQuery=$(cat <<EOF
 SELECT
     f.feed_id,
     f.posted_by AS postUserId,
@@ -53,6 +53,7 @@ FROM
 ORDER BY
     f.feed_id ASC
 EOF
+)
 
 echo "starting to extract feed data into file $feedFile"
 echo "feedQuery: $feedQuery"
