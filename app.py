@@ -24,6 +24,7 @@ def create_app(config_filename):
     @app.route('/nonlinear/global_rank', methods=['POST'])
     def NonGRank():
         data = flask.request.get_json(force=True)
+        utils.check_json(data)
         _, ranks = nonlin_model.GlobalRank(data["feedItems"])
         json_obj = {}
         json_obj["feedItemsRank"] = [x for x in ranks.values()]
