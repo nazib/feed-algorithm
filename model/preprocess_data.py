@@ -30,7 +30,6 @@ def preprocess_data(Data_dir, processed_file):
             y = pg.decode(str(location.values[i]))
             lat[i] = y[0]
             lng[i] = y[1]
-            print(i)
             i += 1
 
         cols = ['feed_id', 'uid', 'ptid', 'likes', 'comments', 'post_age',
