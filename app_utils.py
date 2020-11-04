@@ -2,7 +2,6 @@ from flask import abort
 import datetime
 import logging
 
-
 def use_gcloud_logging():
     import google.cloud.logging
     # google cloud logging

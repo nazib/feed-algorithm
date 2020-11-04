@@ -93,6 +93,20 @@ class NonLinearModel(vae_model):
         self.Enc_gender = preprocessing.LabelEncoder()
         labels = ['Male','Female','male','female','other','Non-binary','WITHHELD']
         self.Enc_gender.fit(labels)
+
+        self.Enc_interest = preprocessing.LabelEncoder()
+        '''
+        labels = ['Sporting Events', 'Outdoors','Photography','Adventure', 'Sightseeing',
+                   'Food & Cuisine','Festivals','Skiing','Scuba & Snorkelling','Exercise',
+                   'History', 'LGBTQ Travel','Meeting locals','Shopping','Travel Blogging',
+                   'Solo Travel','Partying','International Study','Digital Nomad','Backpacking',
+                   'Surfing','Van Life','Accessible Travel']
+        self.Enc_interest.fit(labels)
+        '''
+        labels = pd.load_csv('/base_data/Data/interests.tsv')
+        labels = labels['object_id']
+        self.Enc_interest.fit(labels)
+        
         
         if len(dirs) == 0:
             self.istrained = False
@@ -240,6 +254,8 @@ class NonLinearModel(vae_model):
             user_level = self.Enc_level.transform(np.array([user_data['statusLevel']]))
             poster_level =self.Enc_level.transform(np.array([poster_data['statusLevel']]))
             user_weights[i]['statusLevel'] = self.calculate_weight(user_level,poster_level)
+
+
 
             #### creating Feature Array ###
             #user_feature = np.array(list(user_data.values()), dtype=float)
