@@ -35,6 +35,23 @@ docker-compose exec web bash
 python process_data_train_model.py
 ```
 
+## run locally (this crashes on macos due to tensorflow binary issue)
+```
+python -m venv venv # create venv (optional)
+source venv/bin/activate # activate venv
+pip install -r requirements.txt
+
+# copy some base models
+mkdir -p logs;
+cp -R -n ./base_data/logs/* ./logs/;
+
+# run flask dev server
+export FLASK_APP=app.py 
+export FLASK_ENV=development
+python -m flask run --host=0.0.0.0 --port 8080
+
+```
+
 ---
 
 ## File List and their purposes
