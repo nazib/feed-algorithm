@@ -41,9 +41,8 @@ python -m venv venv # create venv (optional)
 source venv/bin/activate # activate venv
 pip install -r requirements.txt
 
-# copy some base models
-mkdir -p logs;
-cp -R -n ./base_data/logs/* ./logs/;
+# copy some base models and Data
+./copy_base_data.sh
 
 # run flask dev server
 export FLASK_APP=app.py 

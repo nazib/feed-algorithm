@@ -15,8 +15,7 @@ services:
       - bash
       - -c
       - |
-        mkdir -p logs;
-        cp -R -n ./base_data/logs/* ./logs/;
+        ./copy_base_data.sh
         python -m flask run --host=0.0.0.0 --port 8080;
 
   test:
@@ -31,6 +30,5 @@ services:
       - -c
       - |
         pip install -r requirements.txt;
-        mkdir -p logs;
-        cp -R -n ./base_data/logs ./;
+        ./copy_base_data.sh
         python;
