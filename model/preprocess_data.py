@@ -3,10 +3,11 @@ import pandas as pd
 import glob
 import pygeohash as pg
 import os
+import logging
 
 def preprocess_data(Data_dir, processed_file):
     if not os.path.exists(Data_dir):
-        print("Data folder not exists")
+        raise Exception("Data folder not exists")
     else:
         files = glob.glob(Data_dir+"*.tsv")
         all_data = pd.DataFrame()
@@ -30,7 +31,6 @@ def preprocess_data(Data_dir, processed_file):
             y = pg.decode(str(location.values[i]))
             lat[i] = y[0]
             lng[i] = y[1]
-            print(i)
             i += 1
 
         cols = ['feed_id', 'uid', 'ptid', 'likes', 'comments', 'post_age',
@@ -48,7 +48,7 @@ def preprocess_data(Data_dir, processed_file):
         pro_data["longitude"] = lng
         pro_data["urls"] = all_data['numberOfMediaUrls']
         pro_data.to_csv(Data_dir+"{0}".format(processed_file), index=False)
-        print("Data Processed !!! \n File:{0} saved in {1}".format(
+        logging.info("Data Processed !!! \n File:{0} saved in {1}".format(
             processed_file, Data_dir))
 
 

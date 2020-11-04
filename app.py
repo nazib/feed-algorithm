@@ -10,7 +10,9 @@ def create_app(config_filename):
     # app.config.from_pyfile(config_filename)
     utils = app_utils(app.logger)
     nonlin_model = NonLinearModel()
-    print("Model initiated")
+    if not nonlin_model.istrained:
+        raise Exception("no trained model found")
+    app.logger.info("Model initiated " + nonlin_model.model_path)
 
     @app.errorhandler(400)
     def value_error(e):

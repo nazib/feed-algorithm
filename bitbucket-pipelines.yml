@@ -34,6 +34,7 @@
     - kubectl config current-context | grep -e "$STAGE_CLUSTER_NAME" || exit 1 # check stage cluster
     - docker pull us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
     - kubectl set image deployment/${STAGE_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} ${STAGE_CONTAINER:-$BITBUCKET_REPO_SLUG}=us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+    - kubectl set image cronjob/${STAGE_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} ${STAGE_CONTAINER:-$BITBUCKET_REPO_SLUG}=us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
     - timeout 360 kubectl rollout status deployment/${STAGE_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} || exit 1
     - docker tag us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:stage
     - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:stage
@@ -52,6 +53,7 @@
     - kubectl config current-context | grep -e "$PRODUCTION_CLUSTER_NAME" || exit 1 # check live cluster
     - docker pull us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
     - kubectl set image deployment/${PRODUCTION_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} ${PRODUCTION_CONTAINER:-$BITBUCKET_REPO_SLUG}=us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
+    - kubectl set image cronjob/${PRODUCTION_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} ${PRODUCTION_CONTAINER:-$BITBUCKET_REPO_SLUG}=us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER}
     - timeout 360 kubectl rollout status deployment/${PRODUCTION_DEPLOYMENT:-$BITBUCKET_REPO_SLUG} || exit 1
     - docker tag us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:${BITBUCKET_BUILD_NUMBER} us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:production
     - docker push us.gcr.io/travello-api/apiv2/${BITBUCKET_REPO_SLUG}:production

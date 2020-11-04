@@ -9,7 +9,6 @@ from keras.layers import LeakyReLU, Lambda, BatchNormalization, Dense
 class vae_model:
     def __init__(self, latent_layers):
         self.latenet_layers = latent_layers
-        print("Model initialized")
 
     def sampling(self, args):
         z_mean, z_log_var = args

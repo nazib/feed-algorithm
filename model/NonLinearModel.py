@@ -19,6 +19,7 @@ class NonLinearModel(vae_model):
             loss_weights=[1, 0.5], metrics=['accuracy'])
 
         model_path = get_global_model_load_path()
+        self.model_path = model_path
 
         # Defini Lebel Encoders for Country, City and StatusLevel. Only Statuslevel is implemented
         # Other two will implemented in future ###
