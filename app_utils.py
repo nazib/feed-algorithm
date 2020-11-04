@@ -17,7 +17,7 @@ class app_utils:
         for x in userdata.keys():
             if x in (
                 'gender',
-                'statusLevel'
+                'statusLevel',
             ):  # x == 'city' or x == 'country' or
                 if isinstance(userdata[x], str):
                     if len(userdata[x]) == 0:
@@ -29,7 +29,11 @@ class app_utils:
                     self.logger.error('{} should be string'.format(x))
                     abort(
                         400, description='{} should be string in User/ Poster Attribute'.format(x))
-
+            if x in ('interests','Groups'):
+                if not isinstance(userdata[x],list):
+                    self.logger.error('{} Interets/Groups must be list of strings'.format(x))
+                    abort(400, description='{} Interets/Groups must be list of strings'.format(x))
+                    
             if x in (
                 "totalReceivedPostComments",
                 "totalReceivedPostLikes",

@@ -2,11 +2,13 @@ import numpy as np
 import tensorflow as tf
 from datetime import datetime
 import keras
+import pandas as pd
+import os
 from sklearn import preprocessing
 from model.vae_model import vae_model
 from model.preprocess_data import create_training_data
 from model.losses import KL_loss
-from model.utils import calculate_weight, get_global_model_load_path, get_global_model_save_path
+from model.utils import calculate_weight, get_global_model_load_path, get_global_model_save_path, similarity
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
@@ -31,6 +33,18 @@ class NonLinearModel(vae_model):
         labels = ['Male', 'Female', 'male', 'female',
                   'other', 'Non-binary', 'WITHHELD']
         self.Enc_gender.fit(labels)
+        
+        ### Label Encoders for Interets ####   
+        self.Enc_interests = preprocessing.LabelEncoder()
+        labels = pd.read_csv(os.getcwd()+'/base_data/Data/interests.tsv',sep='\t')
+        labels = labels['object_id']
+        self.Enc_interests.fit(labels)
+
+        ### Label Encoders for Groups #### 
+        self.Enc_groups = preprocessing.LabelEncoder()
+        glabels = pd.read_csv(os.getcwd()+'/base_data/Data/public_active_groups.tsv',sep='\t')
+        glabels = glabels['name']
+        self.Enc_groups.fit(glabels)
 
         if not bool(model_path):
             self.istrained = False
@@ -184,7 +198,17 @@ class NonLinearModel(vae_model):
                 np.array([poster_data['statusLevel']]))
             user_weights[i]['statusLevel'] = calculate_weight(
                 user_level, poster_level)
-
+            
+            ### Interests weight ####
+            user_interests = self.Enc_interests.transform(np.array(user_data["interests"]))
+            poster_interests = self.Enc_interests.transform(np.array(poster_data["interests"]))
+            interest_similarity = similarity(user_interests,poster_interests)
+            
+            ### Group Weights ####
+            user_groups = self.Enc_groups.transform(np.array(user_data["Groups"]))
+            poster_groups = self.Enc_groups.transform(np.array(poster_data["Groups"]))
+            group_similarity = similarity(user_groups,poster_groups)
+            
             #### creating Feature Array ###
             #user_feature = np.array(list(user_data.values()), dtype=float)
             user_feature = np.array(
@@ -208,7 +232,7 @@ class NonLinearModel(vae_model):
                     user_weights[i]['statusLevel']], dtype=float
             )
             personal_rank = np.sum(
-                user_feature * weights * feed_data[i]['globalRank'])
+                user_feature * weights * feed_data[i]['globalRank'])+ interest_similarity + group_similarity
 
             output[i]['feedItemId'] = feed_data[i]['feedItemId']
             output[i]['personalised'] = personal_rank

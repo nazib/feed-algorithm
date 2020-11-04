@@ -103,10 +103,10 @@ class NonLinearModel(vae_model):
                    'Surfing','Van Life','Accessible Travel']
         self.Enc_interest.fit(labels)
         '''
-        labels = pd.load_csv('/base_data/Data/interests.tsv')
+        labels = pd.read_csv('/base_data/Data/interests.tsv')
         labels = labels['object_id']
         self.Enc_interest.fit(labels)
-        
+
         
         if len(dirs) == 0:
             self.istrained = False
