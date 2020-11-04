@@ -5,7 +5,7 @@
   - pip
   script:
     - pip3 install -r requirements.txt
-    - ./copy_base_data.sh
+    - ./scripts/copy_base_model.sh
     - python -m pytest
 
 .build-docker-image: &build-docker-image

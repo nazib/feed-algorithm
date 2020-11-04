@@ -15,7 +15,7 @@ services:
       - bash
       - -c
       - |
-        ./copy_base_data.sh
+        ./scripts/copy_base_model.sh
         python -m flask run --host=0.0.0.0 --port 8080;
 
   test:
@@ -30,5 +30,5 @@ services:
       - -c
       - |
         pip install -r requirements.txt;
-        ./copy_base_data.sh
+        ./scripts/copy_base_model.sh
         python;
