@@ -2,12 +2,14 @@ from flask import abort
 import datetime
 import logging
 
+
 def use_gcloud_logging():
     import google.cloud.logging
     # google cloud logging
     client = google.cloud.logging.Client()
     client.get_default_handler()
     client.setup_logging()
+
 
 class app_utils:
     def __init__(self, logger):
@@ -29,11 +31,13 @@ class app_utils:
                     self.logger.error('{} should be string'.format(x))
                     abort(
                         400, description='{} should be string in User/ Poster Attribute'.format(x))
-            if x in ('interests','Groups'):
-                if not isinstance(userdata[x],list):
-                    self.logger.error('{} Interets/Groups must be list of strings'.format(x))
-                    abort(400, description='{} Interets/Groups must be list of strings'.format(x))
-                    
+            if x in ('interests', 'groups'):
+                if not isinstance(userdata[x], list):
+                    self.logger.error(
+                        '{} interests / groups must be list of strings'.format(x))
+                    abort(
+                        400, description='{} interests / groups must be list of strings'.format(x))
+
             if x in (
                 "totalReceivedPostComments",
                 "totalReceivedPostLikes",

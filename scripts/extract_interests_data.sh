@@ -3,7 +3,7 @@
 user=${MYSQL_USER}
 pass=${MYSQL_PASS}
 limit=${LIMIT:-5000}
-file=${1:-'Data/interests_data.tsv'}
+file=${1:-'Data/interests.tsv'}
 
 if [[ -z "$user" && -z "$pass" ]]; then
   echo "Please set MYSQL_USER and MYSQL_PASS environment variables"

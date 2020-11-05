@@ -1,3 +1,4 @@
+from typing import Dict
 import numpy as np
 import tensorflow as tf
 from datetime import datetime
@@ -42,7 +43,7 @@ class NonLinearModel(vae_model):
 
         ### Label Encoders for Groups ####
         self.Enc_groups = preprocessing.LabelEncoder()
-        glabels = pd.read_csv(os.getcwd()+'/Data/public_active_groups.tsv',sep='\t')
+        glabels = pd.read_csv(os.getcwd()+'/Data/groups.tsv',sep='\t')
         glabels = glabels['name']
         self.Enc_groups.fit(glabels)
 
@@ -144,7 +145,7 @@ class NonLinearModel(vae_model):
         feed_data = data["feedItems"]
         feed_data, _ = self.GlobalRank(feed_data)
 
-        user_data = data["userAttributes"]
+        user_data: Dict = data["userAttributes"]
         user_weights = {}
         output = {}
 
@@ -152,7 +153,7 @@ class NonLinearModel(vae_model):
             user_weights[i] = {}
             output[i] = {}
 
-            poster_data = feed_data[i]['posterAttributes']
+            poster_data: Dict = feed_data[i]['posterAttributes']
             '''
             if user_data['UserCity'] == poster_data['PosterCity']:
                 user_weights['city'] = 1.0
@@ -195,13 +196,13 @@ class NonLinearModel(vae_model):
                 user_level, poster_level)
 
             ### Interests weight ####
-            user_interests = self.Enc_interests.transform(np.array(user_data["interests"]))
-            poster_interests = self.Enc_interests.transform(np.array(poster_data["interests"]))
+            user_interests = self.Enc_interests.transform(np.array(user_data.get("interests", [])))
+            poster_interests = self.Enc_interests.transform(np.array(poster_data.get("interests", [])))
             interest_similarity = similarity(user_interests,poster_interests)
 
             ### Group Weights ####
-            user_groups = self.Enc_groups.transform(np.array(user_data["Groups"]))
-            poster_groups = self.Enc_groups.transform(np.array(poster_data["Groups"]))
+            user_groups = self.Enc_groups.transform(np.array(user_data.get("groups", [])))
+            poster_groups = self.Enc_groups.transform(np.array(poster_data.get("groups", [])))
             group_similarity = similarity(user_groups,poster_groups)
 
             #### creating Feature Array ###
