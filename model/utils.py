@@ -14,7 +14,7 @@ def calculate_weight(sid, pid):
 
 
 def get_global_model_load_path():
-    logs_dir = os.path.abspath(os.getcwd()+"/logs")
+    logs_dir = os.path.abspath(os.getcwd()+"/base_data/logs")
     files = sorted(
         glob.glob(logs_dir + "/**/VAE_noisy.h5"),
         key=os.path.getmtime,

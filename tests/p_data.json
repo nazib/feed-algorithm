@@ -1,0 +1,52 @@
+{
+  "userAttributes": {
+    "city": "Brisbane",
+    "country": "Australia",
+    "gender": "Male",
+    "statusLevel": "Nomad",
+    "totalReceivedPostComments": 10,
+    "totalReceivedPostLikes": 143.30,
+    "numberOfFollowers": 30
+  },
+  "feedItems": [
+    {
+      "feedItemId": "932r3",
+      "numberOfLikes": 10,
+      "numberOfComments": 5,
+      "postedDate": "2020-08-23 12:34:00",
+      "postTextLength": 50,
+      "numberOfHashTags": 10,
+      "latitude": 143.30,
+      "longitude": 30.3,
+      "numberOfMediaUrls": 3,
+      "posterAttributes": {
+        "city": "New York",
+        "country": "USA",
+        "gender": "Female",
+        "statusLevel": "Expert",
+        "totalReceivedPostComments": 40,
+        "totalReceivedPostLikes": 30,
+        "numberOfFollowers": 300
+      }
+    },
+    {
+      "feedItemId": "97349",
+      "numberOfLikes": 10,
+      "numberOfComments": 5,
+      "postedDate": "2020-08-23 12:34:00",
+      "postTextLength": 50,
+      "numberOfHashTags": 10,
+      "latitude": 143.30,
+      "longitude": 30.3,
+      "numberOfMediaUrls": 3,
+      "posterAttributes": {
+        "city": "New York",
+        "country": "USA",
+        "gender": "Female",
+        "statusLevel": "Expert",
+        "totalReceivedPostComments": 40,
+        "totalReceivedPostLikes": 30,
+        "numberOfFollowers": 300
+      }
+  }]
+}

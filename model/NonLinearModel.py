@@ -37,13 +37,13 @@ class NonLinearModel(vae_model):
 
         ### Label Encoders for Interets ####
         self.Enc_interests = preprocessing.LabelEncoder()
-        labels = pd.read_csv(os.getcwd()+'/Data/interests.tsv',sep='\t')
+        labels = pd.read_csv(os.getcwd()+'/base_data/Data/interests.tsv',sep='\t')
         labels = labels['object_id']
         self.Enc_interests.fit(labels)
 
         ### Label Encoders for Groups ####
         self.Enc_groups = preprocessing.LabelEncoder()
-        glabels = pd.read_csv(os.getcwd()+'/Data/groups.tsv',sep='\t')
+        glabels = pd.read_csv(os.getcwd()+'/base_data/Data/groups.tsv',sep='\t')
         glabels = glabels['name']
         self.Enc_groups.fit(glabels)
 
@@ -199,11 +199,14 @@ class NonLinearModel(vae_model):
             user_interests = self.Enc_interests.transform(np.array(user_data.get("interests", [])))
             poster_interests = self.Enc_interests.transform(np.array(poster_data.get("interests", [])))
             interest_similarity = similarity(user_interests,poster_interests)
-
+            if np.isnan(interest_similarity):
+                interest_similarity = 0.0
             ### Group Weights ####
             user_groups = self.Enc_groups.transform(np.array(user_data.get("groups", [])))
             poster_groups = self.Enc_groups.transform(np.array(poster_data.get("groups", [])))
             group_similarity = similarity(user_groups,poster_groups)
+            if np.isnan(group_similarity):
+                group_similarity = 0.0
 
             #### creating Feature Array ###
             #user_feature = np.array(list(user_data.values()), dtype=float)
