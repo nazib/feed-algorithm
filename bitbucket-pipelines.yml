@@ -5,6 +5,7 @@
   - pip
   script:
     - pip3 install -r requirements.txt
+    - ./scripts/copy_base_data.sh
     - ./scripts/copy_base_model.sh
     - python -m pytest
 

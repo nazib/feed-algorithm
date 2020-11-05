@@ -1,0 +1,24 @@
+id	object_id	name	image_url	dactive	icon_url	display_order
+1	Sporting Events	Sporting Events	https://storage.googleapis.com/travello-interests-images/interests-sporting-events.jpg	0	NULL	21
+2	Outdoors	Outdoors	https://storage.googleapis.com/travello-interests-images/interests-outdoors.jpg	0	NULL	8
+3	Photography	Photography	https://storage.googleapis.com/travello-interests-images/interests-photography.jpg	0	NULL	2
+4	Adventure	Adventure	https://storage.googleapis.com/travello-interests-images/interests-outdoor-adventure.jpg	0	NULL	1
+5	Sightseeing	Sightseeing	https://storage.googleapis.com/travello-interests-images/interests-sight-seeing.jpg	0	NULL	15
+6	Food & Cuisine	Food & Cuisine	https://storage.googleapis.com/travello-interests-images/interests-food.jpg	0	NULL	13
+7	Festivals	Festivals	https://storage.googleapis.com/travello-interests-images/interests-festivals.jpg	0	NULL	14
+8	Skiing	Skiing	https://storage.googleapis.com/travello-interests-images/interests-skiing.jpg	0	NULL	16
+9	Scuba & Snorkelling	Scuba & Snorkelling	https://storage.googleapis.com/travello-interests-images/interests-skuba-snorkel.jpg	0	NULL	18
+10	Exercise	Exercise	https://storage.googleapis.com/travello-interests-images/interests-excercise.jpg	0	NULL	17
+11	History	History	https://storage.googleapis.com/travello-interests-images/interests-history.jpg	0	NULL	20
+12	LGBTQ Travel	LGBTQ Travel	https://storage.googleapis.com/travello-interests-images/interests-lgbtq-travel.jpg	0	NULL	9
+13	Meet Locals	Meeting locals	https://storage.googleapis.com/travello-interests-images/interests-locals.jpg	0	NULL	11
+14	Shopping	Shopping	https://storage.googleapis.com/travello-interests-images/interests-shopping.jpg	0	NULL	22
+15	Travel Blogging	Travel Blogging	https://storage.googleapis.com/travello-interests-images/interests-travel-blogging.jpg	0	NULL	3
+16	Solo Travel	Solo Travel	https://storage.googleapis.com/travello-interests-images/interests-solo-travel.jpg	0	NULL	4
+17	Party	Partying	https://storage.googleapis.com/travello-interests-images/interests-partying.jpg	0	NULL	12
+18	International Study	International Study	https://storage.googleapis.com/travello-interests-images/interests-international-study.jpg	0	NULL	6
+19	Digital Nomad	Digital Nomad	https://storage.googleapis.com/travello-interests-images/interests-digital-nomad.jpg	0	NULL	7
+20	Backpacking	Backpacking	https://storage.googleapis.com/travello-interests-images/interests-backpacking.jpg	0	NULL	5
+21	Surfing	Surfing	https://storage.googleapis.com/travello-interests-images/interests-surfing.jpg	0	NULL	19
+22	Van Life	Van Life	https://storage.googleapis.com/travello-interests-images/interests-vanning.jpg	0	NULL	10
+23	Accessible Travel	Accessible Travel	https://storage.googleapis.com/travello-interests-images/interests-disabled-travel.jpg	0	NULL	7

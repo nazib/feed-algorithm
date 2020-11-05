@@ -1,12 +1,15 @@
+from typing import Dict
 import numpy as np
 import tensorflow as tf
 from datetime import datetime
 import keras
+import pandas as pd
+import os
 from sklearn import preprocessing
 from model.vae_model import vae_model
 from model.preprocess_data import create_training_data
 from model.losses import KL_loss
-from model.utils import calculate_weight, get_global_model_load_path, get_global_model_save_path
+from model.utils import calculate_weight, get_global_model_load_path, get_global_model_save_path, similarity
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
@@ -32,16 +35,22 @@ class NonLinearModel(vae_model):
                   'other', 'Non-binary', 'WITHHELD']
         self.Enc_gender.fit(labels)
 
+        ### Label Encoders for Interets ####
+        self.Enc_interests = preprocessing.LabelEncoder()
+        labels = pd.read_csv(os.getcwd()+'/Data/interests.tsv',sep='\t')
+        labels = labels['object_id']
+        self.Enc_interests.fit(labels)
+
+        ### Label Encoders for Groups ####
+        self.Enc_groups = preprocessing.LabelEncoder()
+        glabels = pd.read_csv(os.getcwd()+'/Data/groups.tsv',sep='\t')
+        glabels = glabels['name']
+        self.Enc_groups.fit(glabels)
+
         if not bool(model_path):
             self.istrained = False
         else:
             #### Getting Saved model directories and selecting most rect one ####
-            # dirs = [path + "/" + k + "/" for k in dirs]
-            #times = [os.path.getmtime(k) for k in dirs]
-            '''
-            for i in range(len(dirs)):
-                dir_dict[times[i]] = dirs[i]
-            '''
             self.Model.load_weights(model_path)
             mu = self.Model.get_layer('mu')
             mu_wgt = mu.get_weights()[1]
@@ -136,7 +145,7 @@ class NonLinearModel(vae_model):
         feed_data = data["feedItems"]
         feed_data, _ = self.GlobalRank(feed_data)
 
-        user_data = data["userAttributes"]
+        user_data: Dict = data["userAttributes"]
         user_weights = {}
         output = {}
 
@@ -144,7 +153,7 @@ class NonLinearModel(vae_model):
             user_weights[i] = {}
             output[i] = {}
 
-            poster_data = feed_data[i]['posterAttributes']
+            poster_data: Dict = feed_data[i]['posterAttributes']
             '''
             if user_data['UserCity'] == poster_data['PosterCity']:
                 user_weights['city'] = 1.0
@@ -186,6 +195,16 @@ class NonLinearModel(vae_model):
             user_weights[i]['statusLevel'] = calculate_weight(
                 user_level, poster_level)
 
+            ### Interests weight ####
+            user_interests = self.Enc_interests.transform(np.array(user_data.get("interests", [])))
+            poster_interests = self.Enc_interests.transform(np.array(poster_data.get("interests", [])))
+            interest_similarity = similarity(user_interests,poster_interests)
+
+            ### Group Weights ####
+            user_groups = self.Enc_groups.transform(np.array(user_data.get("groups", [])))
+            poster_groups = self.Enc_groups.transform(np.array(poster_data.get("groups", [])))
+            group_similarity = similarity(user_groups,poster_groups)
+
             #### creating Feature Array ###
             #user_feature = np.array(list(user_data.values()), dtype=float)
             user_feature = np.array(
@@ -209,7 +228,7 @@ class NonLinearModel(vae_model):
                     user_weights[i]['statusLevel']], dtype=float
             )
             personal_rank = np.sum(
-                user_feature * weights * feed_data[i]['globalRank'])
+                user_feature * weights * feed_data[i]['globalRank'])+ interest_similarity + group_similarity
 
             output[i]['feedItemId'] = feed_data[i]['feedItemId']
             output[i]['personalised'] = personal_rank

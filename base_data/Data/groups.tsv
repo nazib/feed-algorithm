@@ -1,0 +1,37 @@
+group_id	object_id	name	type	public	deactive	created_at	updated_at
+2	studentflights	Student Flights	AGENCY	1	0	2016-11-04 04:01:08	2016-11-04 04:01:08
+3	stoketravel	Stoke Travel	AGENCY	1	0	2016-11-04 04:01:08	2016-11-04 04:01:08
+4	yhahostel	YHA 	AGENCY	1	0	2016-11-04 04:01:08	2016-11-04 04:01:08
+5	digitalnomads	Digital Nomad	INTEREST	1	0	2016-11-04 04:01:08	2016-11-04 04:01:08
+7	femaletravellers	Female Travellers	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+8	travelbloggers	Travel Bloggers	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+9	outdooradventure	Outdoor & Adventure	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+10	photography	Travel Photography	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+11	solotravellers	Solo Travellers	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+12	internationalstudents	International Students	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+14	backpackerssouthasia	Backpackers Asia	INTEREST	1	0	2016-11-04 00:00:00	2016-11-04 00:00:00
+16	backpackersworldtravel	Backpackers World Travel	AGENCY	1	0	2016-11-05 00:10:11	2016-11-05 00:10:11
+18	backpakereurope	Backpackers Europe	INTEREST	1	0	2016-11-06 00:00:00	2016-11-06 00:00:00
+20	hikorea	HI Korea	AGENCY	1	0	2016-11-06 00:00:00	2016-11-06 00:00:00
+21	backpackersau	Backpackers Australia	INTEREST	1	0	2016-11-06 00:00:00	2016-11-06 00:00:00
+22	backpackersnz	Backpackers New Zealand	INTEREST	1	0	2016-11-06 00:00:00	2016-11-06 00:00:00
+23	backpackerssa	Backpackers South America	INTEREST	1	0	2016-11-06 00:00:00	2016-11-06 00:00:00
+26	digitalnomadgirls	Digital Nomad Girls	AGENCY	1	0	2017-02-17 00:00:00	2017-02-17 00:00:00
+27	travellotest	Travello Test	AGENCY	1	0	2017-01-17 00:00:00	2017-01-17 00:00:00
+78	yhaenglandandwales	YHA England and Wales	AGENCY	1	0	2017-10-25 09:22:28	2017-10-25 09:22:28
+82	gaycation	Gaycation	INTEREST	1	0	2017-12-04 22:58:20	2017-12-04 22:58:20
+83	vanlife	Vanlife	INTEREST	1	0	2018-03-05 12:07:06	2018-03-05 12:07:06
+88	adventurequeensland	Explore Queensland	INTEREST	1	0	2018-04-11 00:47:49	2018-04-11 00:47:49
+96	balibackpackers	Bali Backpackers	INTEREST	1	0	2019-01-12 01:45:58	2019-01-12 01:45:58
+97	travelinspiration	Travel Inspiration	AGENCY	1	0	2019-01-23 02:16:53	2019-01-23 02:16:53
+98	backpackerscroatia	Backpackers Croatia	INTEREST	1	0	2019-01-30 23:21:40	2019-01-30 23:21:40
+99	travelloofferscompetitions	Travello Offers & Competitions	AGENCY	1	0	2019-03-28 07:19:46	2019-03-28 07:19:46
+101	aussietravellers	Aussie Travellers	INTEREST	1	0	2019-05-15 01:55:22	2019-05-15 01:55:22
+102	jucycampers	JUCY Campers	AGENCY	1	0	2019-08-19 03:02:46	2019-08-19 03:02:46
+104	accessibletravel	Accessible Travel	INTEREST	1	0	2020-01-31 12:36:08	2020-01-31 12:36:08
+107	filipinotravellers	Biyaherong Pinoy	INTEREST	1	0	2020-03-05 11:13:22	2020-03-05 11:13:22
+108	letsgocaravancamping	Let's Go - Caravan & Camping	AGENCY	1	0	2020-03-11 22:06:02	2020-03-11 22:06:02
+110	travellerstrappedcoronavirus	Travellers Trapped: Coronavirus	INTEREST	1	0	2020-03-27 00:27:53	2020-03-27 00:27:53
+111	dubaitravellers	Dubai Travellers	AGENCY	1	0	2020-07-03 09:39:53	2020-07-03 09:39:53
+112	campingaustralia	Camping Australia	AGENCY	1	0	2020-09-15 10:48:57	2020-09-15 10:48:57
+113	travello	Travello	AGENCY	1	0	2020-09-15 10:48:57	2020-09-15 10:48:57
