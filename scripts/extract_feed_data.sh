@@ -3,14 +3,14 @@
 user=${MYSQL_USER}
 pass=${MYSQL_PASS}
 limit=${LIMIT:-5000}
-feedFile=${1:-'feed_data.tsv'}
+file=${1:-'Data/feed_data.tsv'}
 
 if [[ -z "$user" && -z "$pass" ]]; then
   echo "Please set MYSQL_USER and MYSQL_PASS environment variables"
   exit 1
 fi
 
-feedQuery=$(cat <<EOF
+query=$(cat <<EOF
 SELECT
     f.feed_id,
     f.posted_by AS postUserId,
@@ -55,11 +55,11 @@ ORDER BY
 EOF
 )
 
-echo "starting to extract feed data into file $feedFile"
-echo "feedQuery: $feedQuery"
+echo "starting to extract data into file $file"
+echo "Query: $query"
 
-mysql --user=$user --password=$pass --host=127.0.0.1 --port=3307 -B -e "$feedQuery" > $feedFile
+mysql --user=$user --password=$pass --host=127.0.0.1 --port=3307 -B -e "$query" > $file
 
-echo "extracted feed data items:" + $(wc -l $feedFile)
+echo "extracted items:" + $(wc -l $file)
 echo "done"
 echo

@@ -103,6 +103,7 @@ class NonLinearModel(vae_model):
             #post_age = float((curr_date - post_date).days)
             post_age = float((curr_date - post_date).total_seconds())
             decay = self.coefficients[2]*np.exp(1-(post_age/TH))
+            # post_age
 
             ########## Imposing Gaussian decay on text length for proper balence ##########
             text_TH = 200
@@ -118,14 +119,14 @@ class NonLinearModel(vae_model):
                              (2 * np.power(h_sigma, 2.)))
 
             weights = np.array(
-                [
-                    self.coefficients[0],
-                    self.coefficients[1],
-                    self.coefficients[3],
-                    self.coefficients[4],
-                    self.coefficients[5],
-                    self.coefficients[6],
-                    self.coefficients[7]
+                [ # from cols that matches create_training_data
+                    self.coefficients[0], # like
+                    self.coefficients[1], # comments
+                    self.coefficients[3], # textlength
+                    self.coefficients[4], # hashtags
+                    self.coefficients[5], # latitude
+                    self.coefficients[6], # longitude
+                    self.coefficients[7]  # urls
                 ])
             data = np.array(
                 [
