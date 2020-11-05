@@ -14,7 +14,7 @@ def calculate_weight(sid, pid):
 
 
 def get_global_model_load_path():
-    logs_dir = os.path.abspath(os.getcwd()+"/base_data/logs")
+    logs_dir = os.path.abspath(os.getcwd()+"/logs")
     files = sorted(
         glob.glob(logs_dir + "/**/VAE_noisy.h5"),
         key=os.path.getmtime,
@@ -38,26 +38,18 @@ def get_global_model_save_path():
 def similarity(user_interests,poster_interests):
     ulen = len(user_interests)
     plen = len(poster_interests)
-    
-    if ulen > plen or ulen == plen:
+
+    if ulen >= plen:
         udata = np.zeros(shape=(ulen))
         pdata = np.zeros(shape=(ulen))
         udata = user_interests
-        pdata[:plen] = poster_interests 
-    elif plen > ulen:
+        pdata[:plen] = poster_interests
+    else:
         udata = np.zeros(shape=(plen))
         pdata = np.zeros(shape=(plen))
         udata[:ulen] = user_interests
         pdata = poster_interests
-    
-    
+
+
     product = np.mean((udata - udata.mean()) * (pdata - pdata.mean()))
     return product
-    ''''
-    stds = udata.std() * pdata.std()
-    if stds == 0:
-        return 0
-    else:
-        product /= stds
-        return product
-    '''

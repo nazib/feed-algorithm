@@ -9,13 +9,7 @@ def preprocess_data(Data_dir, processed_file):
     if not os.path.exists(Data_dir):
         raise Exception("Data folder not exists")
     else:
-        files = glob.glob(Data_dir+"*.tsv")
-        all_data = pd.DataFrame()
-
-        for x in files:
-            data = pd.read_csv(x, sep='\t', lineterminator='\n')
-            all_data = pd.concat([all_data, data])
-
+        all_data = pd.read_csv(os.getcwd()+'/Data/feed_data.tsv')
         m, _ = all_data.shape
         text_data = all_data[all_data.columns.to_list()[-1]].fillna(0)
         location = all_data["posted_location"].fillna(0)

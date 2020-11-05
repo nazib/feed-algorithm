@@ -45,7 +45,7 @@ def create_app(config_filename):
 
 
 if __name__ == "__main__":
-    #use_gcloud_logging()
+    use_gcloud_logging()
     port = int(os.getenv('PORT', 8080))
     http_server = WSGIServer(('0.0.0.0', port), create_app('production'))
     http_server.serve_forever()
