@@ -1,5 +1,5 @@
 # Whait is Feed Algorithm
-This is the algorithm developed for Travelloapp.com. Travello is a travel based social network app. The app requires an intelligent way to provide new feeds for its users (see here: https://travelloapp.com/feed). The algorithm uses variational auto-encoder to learn feature coefficients and use those coefficients to rank the user's posts and present the feed items which relevent to particular app user. The REST api of this algorithm is developed to apply and run this algorithm for any social network sites.     
+This is the algorithm developed for Travelloapp.com. Travello is a travel based social network app. The app requires an intelligent way to provide new feeds for its users (see here: https://travelloapp.com/feed). The algorithm uses variational auto-encoder to learn feature coefficients and use those coefficients to rank the user's posts and present the feed items which relevent to particular app user. The REST api of this algorithm called everytime an user check his/her feed in the app. The algorithm is currently running behind the Travelloapp feed system in travello's own Google kubernets engine.     
 
 # Quick start
 
